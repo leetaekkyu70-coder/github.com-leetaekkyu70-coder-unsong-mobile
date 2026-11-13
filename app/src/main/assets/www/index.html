@@ -195,6 +195,7 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0;font-size:17px}
     <button class="btn" id="kOpen">시작하기</button>
     <div class="note">비밀번호가 등록되어 있지 않습니다. 홈 화면의 "정보 수정"에서 등록할 수 있습니다.</div>
   </div>
+  <div class="note" id="madeBy" style="text-align:center;margin-top:18px;line-height:1.6">made by Aul_70<br>leetaekkyu70@gmail.com</div>
 </section>
 
 <section id="home" hidden>
@@ -255,6 +256,7 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0;font-size:17px}
     <li><b>4. 확인</b>: 운송 → 내역에서 월 합계와 입금을, 통계에서 연간 흐름을 봅니다.</li>
     <li>아래 메뉴는 화면 맨 밑에 항상 있습니다: 홈, 운송, 차량, 보험·검사, 연락처, 통계.</li>
   </ul></details>
+  <div class="note" style="text-align:center;margin-top:18px;line-height:1.6">made by Aul_70<br>leetaekkyu70@gmail.com</div>
 </section>
 
 <section id="calc" hidden>
@@ -1904,8 +1906,8 @@ if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useL
 (function(){
   if(!window.Native)return;
   document.body.classList.add("app");
-  const APP_VER="1.3";
-  {const v=document.createElement("div");v.id="appVer";v.className="note";v.style.cssText="text-align:center;margin-top:14px";v.textContent="앱 버전 "+APP_VER;$("gate").append(v)}
+  const APP_VER="1.4";
+  {const v=document.createElement("div");v.id="appVer";v.className="note";v.style.cssText="text-align:center;margin-top:4px";v.textContent="앱 버전 "+APP_VER;$("gate").append(v)}
   /* 1) 저장할 때마다 앱 내부 파일에도 복사해 둔다 */
   const _ls=lsSave;
   lsSave=function(){_ls();try{Native.persist(localStorage.getItem(LS)||"")}catch(e){}};
