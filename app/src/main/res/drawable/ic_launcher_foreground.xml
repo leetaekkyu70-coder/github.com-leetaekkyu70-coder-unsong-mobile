@@ -1,16 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 우편 트럭 아이콘: 짐칸이 편지봉투 모양 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <group
-        android:scaleX="2.6"
-        android:scaleY="2.6"
-        android:translateX="22.8"
-        android:translateY="22.8">
+        android:scaleX="0.1505"
+        android:scaleY="0.1505"
+        android:translateX="15.47"
+        android:translateY="11.41">
         <path
             android:fillColor="#FFFFFFFF"
-            android:pathData="M20,8h-3V4H3C1.9,4 1,4.9 1,6v11h2c0,1.66 1.34,3 3,3s3,-1.34 3,-3h6c0,1.66 1.34,3 3,3s3,-1.34 3,-3h2v-5L20,8zM6,18.5c-0.83,0 -1.5,-0.67 -1.5,-1.5s0.67,-1.5 1.5,-1.5 1.5,0.67 1.5,1.5S6.83,18.5 6,18.5zM19.5,9.5l1.96,2.5H17V9.5H19.5zM18,18.5c-0.83,0 -1.5,-0.67 -1.5,-1.5s0.67,-1.5 1.5,-1.5 1.5,0.67 1.5,1.5S18.83,18.5 18,18.5z" />
+            android:pathData="M88,166H290A18,18 0 0 1 308,184V324A18,18 0 0 1 290,342H88A18,18 0 0 1 70,324V184A18,18 0 0 1 88,166Z" />
+        <path
+            android:strokeColor="@color/brand"
+            android:strokeWidth="15"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M92,190L189,262L286,190" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M322,212H384Q397,212 404,223L437,272Q442,280 442,290V324Q442,342 424,342H322Z" />
+        <path
+            android:fillColor="@color/brand"
+            android:pathData="M340,232H379L407,274H340Z" />
+        <path
+            android:fillColor="@color/brand"
+            android:pathData="M98,350a50,50 0 1,0 100,0a50,50 0 1,0 -100,0z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M115,350a33,33 0 1,0 66,0a33,33 0 1,0 -66,0z" />
+        <path
+            android:fillColor="@color/brand"
+            android:pathData="M136,350a12,12 0 1,0 24,0a12,12 0 1,0 -24,0z" />
+        <path
+            android:fillColor="@color/brand"
+            android:pathData="M324,350a50,50 0 1,0 100,0a50,50 0 1,0 -100,0z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M341,350a33,33 0 1,0 66,0a33,33 0 1,0 -66,0z" />
+        <path
+            android:fillColor="@color/brand"
+            android:pathData="M362,350a12,12 0 1,0 24,0a12,12 0 1,0 -24,0z" />
     </group>
 </vector>
