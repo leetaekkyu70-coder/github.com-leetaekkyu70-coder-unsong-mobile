@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>운송 모바일</title>
 <style>
-:root{--bg:#f3f1ec;--card:#fffdf9;--ink:#1d2a33;--sub:#47535c;--line:#d2ccbf;--acc:#0f5c63;--acc-ink:#fff;--soft:#e4efee;--warn:#9a4a12;--warnbg:#fbeedd;--bad:#a32626;--s1:#2a78d6;--s2:#eb6834;--grid:#e3dfd5}
+:root{--bg:#f3f1ec;--card:#fffdf9;--ink:#1d2a33;--sub:#47535c;--line:#d2ccbf;--acc:#d62828;--acc-ink:#fff;--soft:#fbe9e6;--warn:#9a4a12;--warnbg:#fbeedd;--bad:#a32626;--s1:#2a78d6;--s2:#eb6834;--grid:#e3dfd5}
 @media not all{
-  :root{--bg:#14191c;--card:#1d2428;--ink:#e9eef0;--sub:#b7c3ca;--line:#3b464d;--acc:#4fb3b9;--acc-ink:#07282b;--soft:#22363a;--warn:#f0b274;--warnbg:#3a2b1a;--bad:#ff8f8f;--s1:#3987e5;--s2:#d95926;--grid:#323c42}
+  :root{--bg:#14191c;--card:#1d2428;--ink:#e9eef0;--sub:#b7c3ca;--line:#3b464d;--acc:#ff7a70;--acc-ink:#2b0707;--soft:#3a2222;--warn:#f0b274;--warnbg:#3a2b1a;--bad:#ff8f8f;--s1:#3987e5;--s2:#d95926;--grid:#323c42}
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;-webkit-text-size-adjust:100%;font-size:17px;line-height:1.6}
@@ -1906,7 +1906,7 @@ if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useL
 (function(){
   if(!window.Native)return;
   document.body.classList.add("app");
-  const APP_VER="1.4";
+  const APP_VER="1.5";
   {const v=document.createElement("div");v.id="appVer";v.className="note";v.style.cssText="text-align:center;margin-top:4px";v.textContent="앱 버전 "+APP_VER;$("gate").append(v)}
   /* 1) 저장할 때마다 앱 내부 파일에도 복사해 둔다 */
   const _ls=lsSave;
