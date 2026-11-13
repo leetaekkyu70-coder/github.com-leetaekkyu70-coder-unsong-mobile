@@ -699,7 +699,7 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0;font-size:17px}
     if(t.length>5&&t.slice(0,2)!=="서울"&&(t[0]==="서"||t[1]==="울")){const u="서울"+t.slice(2);if(known(u))return u}
     /* 국 이름이 한 글자의 자모 하나만 다르게 읽혔고(예: 중랑→중량) 그런 등록 이름이 하나뿐이면 그 이름으로 맞춘다 */
     const ct=core(t), near=names.filter(n=>{const cn=core(n);return cn.length===ct.length&&lev(jamo(ct),jamo(cn))===1});
-    if(near.length===1)return near[0];
+    if(near.length&&new Set(near.map(core)).size===1)return near.find(n=>n.startsWith("서울"))||near[0];
     return t;
   }
   const knownNames=()=>{const set=new Set();try{for(const o of origins())set.add(o);for(const r of routes.values()){set.add(r.from);set.add(r.to)}}catch(e){}return [...set].filter(Boolean)};
@@ -1881,6 +1881,8 @@ if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useL
 (function(){
   if(!window.Native)return;
   document.body.classList.add("app");
+  const APP_VER="1.2";
+  {const v=document.createElement("div");v.id="appVer";v.className="note";v.style.cssText="text-align:center;margin-top:14px";v.textContent="앱 버전 "+APP_VER;$("gate").append(v)}
   /* 1) 저장할 때마다 앱 내부 파일에도 복사해 둔다 */
   const _ls=lsSave;
   lsSave=function(){_ls();try{Native.persist(localStorage.getItem(LS)||"")}catch(e){}};
