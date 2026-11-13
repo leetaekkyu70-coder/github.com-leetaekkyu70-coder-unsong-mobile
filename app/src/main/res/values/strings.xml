@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">운송 모바일</string>
+    <string name="channel_due">기한 알림</string>
+    <string name="channel_due_desc">검사, 보험 만기, 소모품 교체 시기를 알려줍니다</string>
+</resources>

@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>운송 모바일</title>
+<style>
+:root{--bg:#f3f1ec;--card:#fffdf9;--ink:#1d2a33;--sub:#47535c;--line:#d2ccbf;--acc:#0f5c63;--acc-ink:#fff;--soft:#e4efee;--warn:#9a4a12;--warnbg:#fbeedd;--bad:#a32626;--s1:#2a78d6;--s2:#eb6834;--grid:#e3dfd5}
+@media not all{
+  :root{--bg:#14191c;--card:#1d2428;--ink:#e9eef0;--sub:#b7c3ca;--line:#3b464d;--acc:#4fb3b9;--acc-ink:#07282b;--soft:#22363a;--warn:#f0b274;--warnbg:#3a2b1a;--bad:#ff8f8f;--s1:#3987e5;--s2:#d95926;--grid:#323c42}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;-webkit-text-size-adjust:100%;font-size:17px;line-height:1.6}
+.wrap{max-width:560px;margin:0 auto;padding:16px 14px 96px}
+.bnav{position:fixed;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:repeat(6,1fr);background:var(--card);border-top:1px solid var(--line)}
+.bnav button{border:0;background:none;color:var(--sub);font:inherit;font-size:12px;letter-spacing:-.03em;font-weight:700;padding:8px 0 9px;min-height:62px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bnav svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bnav button[aria-selected=true]{color:var(--acc)}
+.bnav button[aria-selected=true] svg{stroke-width:2.3}
+body.locked .bnav,body.locked h1,body.locked #subTabs,body.locked section:not(#gate){display:none!important}
+body:not(.locked) #gate{display:none!important}
+#gate .brand{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:6px 0 14px}
+#gate .brand small{display:block;font-size:14px;font-weight:500;color:var(--sub);margin-top:2px}
+.card.hero{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.clock{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.clock b{font-size:44px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+.clock span{font-size:17px;opacity:.9}
+.who{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid color-mix(in srgb,var(--acc-ink) 25%,transparent)}
+.hero .n{font-weight:800;font-size:18px}
+.hero .m{font-size:15px;color:inherit;opacity:.9;font-variant-numeric:tabular-nums}
+.hero .link{color:var(--acc-ink);text-decoration:underline;padding:8px 0 8px 8px}
+.wx{display:block;margin-top:12px;padding:11px 12px;border-radius:10px;background:color-mix(in srgb,var(--acc-ink) 14%,transparent);color:var(--acc-ink);font-weight:700;text-decoration:none;text-align:center}
+.big2{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:end}
+.big2 span{display:block;font-size:14.5px;color:var(--sub)}
+.big2 b{font-size:30px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.big2 div:last-child{text-align:right}
+.rec{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:16.5px;font-variant-numeric:tabular-nums}
+.rec:first-child{border-top:0}
+.rec .d{color:var(--sub)}
+.rec .v{font-weight:700}
+h1{font-size:22px;margin:4px 0 12px;letter-spacing:-.02em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+label{display:block;font-size:15px;color:var(--sub);margin:12px 0 5px;font-weight:600}
+input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;min-height:50px;min-width:0;max-width:100%;font-size:17px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.row>div{min-width:0}
+.btn{display:block;width:100%;padding:13px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-ink);font:inherit;font-weight:700;min-height:52px;font-size:17.5px}
+.btn.ghost{background:transparent;color:var(--acc);border:1.5px solid var(--acc)}
+.btn:disabled{opacity:.5}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.seg button{padding:11px 0;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;font:inherit;min-height:50px;font-size:16.5px}
+.seg button[aria-pressed=true]{background:var(--soft);border-color:var(--acc);color:var(--acc);font-weight:700}
+.note{font-size:15px;color:var(--sub);margin-top:8px;line-height:1.55}
+.warn{background:var(--warnbg);color:var(--warn);border-radius:10px;padding:9px 11px;font-size:15.5px;margin-top:10px;line-height:1.55}
+.sum{display:grid;grid-template-columns:1fr auto;gap:7px 12px;font-variant-numeric:tabular-nums;font-size:17px}
+.sum .t{font-weight:800;font-size:20px;border-top:1px solid var(--line);padding-top:8px;margin-top:4px}
+.item{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:11px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item .a{font-weight:600}
+.item .f{font-weight:700;font-variant-numeric:tabular-nums;text-align:right;font-size:17.5px}
+.item .m{font-size:13px;color:var(--sub);overflow-wrap:anywhere}
+.item .del{justify-self:end;border:0;background:none;color:var(--bad);font:inherit;font-size:15px;padding:6px 0 6px 12px;min-height:32px}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;max-height:62vh;overflow-y:auto}
+table{border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+th,td{padding:6px 9px;text-align:right;border-bottom:1px solid var(--line)}
+thead th{position:sticky;top:0;background:var(--card);z-index:1}
+tbody th{position:sticky;left:0;background:var(--card);text-align:left;font-weight:600}
+tr.hit td,tr.hit th{background:var(--soft)}
+td.hit{outline:2px solid var(--acc);outline-offset:-2px;font-weight:800}
+.rt{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.rt:first-child{border-top:0;padding-top:2px}
+.rt .n{font-weight:700;overflow-wrap:anywhere}
+.rt .m{font-size:13px;color:var(--sub)}
+.step{display:grid;grid-template-columns:48px 34px 48px;align-items:center;text-align:center}
+.step button{height:48px;border-radius:12px;border:1.5px solid var(--acc);background:transparent;color:var(--acc);font:inherit;font-size:24px;font-weight:700;line-height:1}
+.step button.plus{background:var(--acc);color:var(--acc-ink)}
+.step button:disabled{opacity:.3}
+.step b{font-size:20px;font-variant-numeric:tabular-nums}
+.daybar{display:flex;justify-content:space-between;align-items:baseline;font-weight:800;font-size:19px;font-variant-numeric:tabular-nums}
+.dayhead{display:flex;justify-content:space-between;font-weight:700;padding:12px 0 4px;border-top:2px solid var(--line);font-variant-numeric:tabular-nums;font-size:17px}
+.dayhead:first-child{border-top:0;padding-top:0}
+.link{border:0;background:none;color:var(--acc);font:inherit;font-size:15.5px;padding:8px 0 8px 12px;min-height:36px}
+.link.bad{color:var(--bad)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;font-variant-numeric:tabular-nums}
+.cal .dow{text-align:center;font-size:13.5px;color:var(--sub);padding:2px 0}
+.cal button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;min-height:60px;padding:3px 2px;font:inherit;font-size:12px;line-height:1.25;display:flex;flex-direction:column;align-items:center;gap:1px}
+.cal button b{font-size:15px}
+.cal button.has{background:var(--soft);border-color:var(--acc)}
+.cal button.today b{text-decoration:underline}
+.cal .c{font-weight:700;color:var(--acc)}
+.legend{display:flex;gap:14px;font-size:14.5px;color:var(--sub);margin:6px 0 2px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto}
+.chart rect:focus{outline:none}
+.chart rect:focus-visible{outline:2px solid var(--acc)}
+.chart text{font-size:10px;fill:var(--sub);font-family:inherit}
+.tip{position:absolute;top:0;left:0;background:var(--ink);color:var(--bg);font-size:12px;line-height:1.45;padding:6px 9px;border-radius:8px;pointer-events:none;white-space:nowrap;font-variant-numeric:tabular-nums;z-index:2}
+.yr{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.yr button{width:48px;height:44px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;font:inherit;font-size:18px}
+.yr b{font-size:19px}
+.mt{width:100%;font-size:14px;white-space:nowrap}
+.mt th,.mt td{padding:6px 5px}
+.mt thead th{position:static}
+.mt tbody th{position:static;background:none}
+.ok{color:var(--acc);font-weight:700}
+.imp{display:grid;grid-template-columns:30px minmax(0,1fr);gap:4px 8px;padding:12px 0;border-top:1px solid var(--line)}
+.imp:first-child{border-top:0}
+.imp input[type=checkbox]{width:24px;height:24px;min-height:24px;margin-top:2px}
+.edit{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:6px}
+.edit .wide{grid-column:1/-1}
+.edit select,.edit input{min-height:42px;padding:8px 8px;font-size:15px}
+.edit .btn{min-height:42px;padding:8px}
+.imp .ctl{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:6px;margin-top:6px}
+.imp select,.imp input[type=number]{min-height:42px;padding:8px 10px;font-size:15px}
+.ct{display:flex;align-items:center;gap:8px;font-weight:800;font-size:17px;margin-bottom:6px}
+.ct i{font-style:normal;background:var(--acc);color:var(--acc-ink);border-radius:999px;font-size:12px;font-weight:700;padding:3px 9px}
+.gd{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:10px 0;border-top:1px solid var(--line)}
+.gd:first-child{border-top:0}
+.gd .n{font-weight:700}
+.gd .m{font-size:14px;color:var(--sub);grid-column:1}
+.gd .link{grid-row:1/3;grid-column:2;align-self:center}
+.tel{color:var(--ink);font-weight:800;font-variant-numeric:tabular-nums;font-size:19px;user-select:all;-webkit-user-select:all}
+.telrow{display:block}
+.telbtns{display:flex;gap:8px;margin-top:6px}
+.copy{white-space:nowrap;border:1.5px solid var(--acc);background:transparent;color:var(--acc);border-radius:999px;font:inherit;font-size:14px;font-weight:700;padding:5px 12px;min-height:36px}
+.copy.call{background:var(--acc);color:var(--acc-ink);text-decoration:none;display:inline-flex;align-items:center}
+.cat{font-size:14.5px;font-weight:700;color:var(--sub);margin:12px 0 0;padding-top:8px;border-top:2px solid var(--line)}
+.cat:first-child{border-top:0;margin-top:0;padding-top:0}
+.desc{font-size:15.5px;color:var(--sub);margin:0 2px 12px}
+.help{background:var(--soft);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:15.5px;line-height:1.6}
+.help summary{font-weight:700;color:var(--acc);font-size:16px}
+.help ul{margin:8px 0 2px;padding-left:18px}
+.help li{margin:5px 0}
+.help b{font-weight:700}
+details summary{font-weight:700;cursor:pointer;padding:4px 0;font-size:17px}
+.subtabs{display:flex;gap:4px;margin:0 0 14px;border-bottom:1px solid var(--line)}
+.subtabs button{flex:1;padding:10px 0;border:0;border-bottom:3px solid transparent;background:none;color:var(--sub);font:inherit;font-weight:600;min-height:44px;margin-bottom:-1px;font-size:16.5px}
+.subtabs button[aria-selected=true]{color:var(--acc);border-bottom-color:var(--acc)}
+.seg.three{grid-template-columns:repeat(3,1fr)}
+.lv1{color:var(--warn);font-weight:700}
+.lv2{color:var(--bad);font-weight:700}
+.rem input[type=date]{min-height:38px;padding:6px 8px;margin-top:6px;font-size:14px}
+[hidden]{display:none!important}
+.card>b,.ct{font-size:18.5px}
+.rt .n,.item .a,.gd .n{font-size:17px}
+.rt .m,.item .m,.gd .m{font-size:15px;line-height:1.5}
+.imp select,.imp input[type=number],.edit select,.edit input{font-size:16px;min-height:46px}
+</style>
+</head>
+<body class="locked">
+<div class="wrap">
+<h1>운송 모바일</h1>
+<div class="subtabs" id="subTabs" role="tablist" aria-label="운송 메뉴" hidden>
+  <button role="tab" data-tab="calc" aria-selected="true">운행</button>
+  <button role="tab" data-tab="hist" aria-selected="false">내역</button>
+  <button role="tab" data-tab="routes" aria-selected="false">노선</button>
+  <button role="tab" data-tab="rate" aria-selected="false">단가표</button>
+</div>
+
+<section id="gate">
+  <div class="brand">운송 모바일<small>우편 운송 운행·운송료·차량 관리</small></div>
+  <div class="card hero">
+    <div class="clock"><b id="gtTime">--:--</b><span id="gtDate"></span></div>
+    <a class="wx" href="https://www.weather.go.kr" target="_blank" rel="noopener">오늘 날씨 보기 (기상청) ›</a>
+  </div>
+  <div class="card" id="gtLoad"><div class="note" style="margin-top:0">불러오는 중입니다…</div></div>
+  <div class="card" id="gtNew" hidden>
+    <div class="ct">차량·운행자 등록</div>
+    <div class="note" style="margin-top:0">처음 한 번만 등록합니다. 이 정보는 이 폰에만 저장됩니다.</div>
+    <label for="kName">운행자 이름</label><input id="kName" autocomplete="name">
+    <label for="kOrg">소속 (선택)</label><input id="kOrg" autocomplete="organization">
+    <label for="kPlate">차량번호</label><input id="kPlate" autocomplete="off" placeholder="예: 12가3456">
+    <label for="kPhone">연락처 (선택)</label><input id="kPhone" type="tel" inputmode="tel" autocomplete="tel">
+    <div class="row">
+      <div><label for="kPw">비밀번호 (4자 이상)</label><input id="kPw" type="password" autocomplete="new-password"></div>
+      <div><label for="kPw2">비밀번호 확인</label><input id="kPw2" type="password" autocomplete="new-password"></div>
+    </div>
+    <label for="kHint">비밀번호 힌트 (선택)</label><input id="kHint" autocomplete="off">
+    <div class="note">비밀번호를 등록하면 앱을 열 때마다 물어봅니다. 비워 두면 비밀번호 없이 사용합니다.</div>
+    <div class="warn" id="kMsg" hidden></div>
+    <button class="btn" id="kStart" disabled style="margin-top:12px">등록하고 시작하기</button>
+  </div>
+  <div class="card" id="gtLock" hidden>
+    <div class="ct" id="gtHello"></div>
+    <label for="kPass" style="margin-top:0">비밀번호</label><input id="kPass" type="password" autocomplete="current-password">
+    <div class="warn" id="kErr" hidden></div>
+    <button class="btn" id="kEnter" style="margin-top:12px">들어가기</button>
+    <button class="link" id="kHintBtn" hidden style="padding-left:0">비밀번호 힌트 보기</button>
+    <div class="note" id="kHintTxt" hidden></div>
+  </div>
+  <div class="card" id="gtOpen" hidden>
+    <div class="ct" id="gtHello2"></div>
+    <button class="btn" id="kOpen">시작하기</button>
+    <div class="note">비밀번호가 등록되어 있지 않습니다. 홈 화면의 "정보 수정"에서 등록할 수 있습니다.</div>
+  </div>
+</section>
+
+<section id="home" hidden>
+  <div class="card hero">
+    <div id="hmDate" style="font-size:15px;opacity:.9"></div>
+    <div id="hmWho" hidden>
+      <div class="who" style="border-top:0;margin-top:2px;padding-top:0"><div><div class="n" id="hmName"></div><div class="m" id="hmOrg"></div><div class="m" id="hmPlate"></div></div><div><button class="link" id="hmEdit">정보 수정</button><button class="link" id="hmLock" hidden>잠그기</button></div></div>
+    </div>
+  </div>
+  <div class="card" id="regCard" hidden>
+    <div class="ct" id="regTitle">차량·운행자 등록</div>
+    <div class="note" style="margin-top:0">처음 한 번만 등록하면 첫 화면에 표시됩니다. 이 정보는 이 폰에만 저장됩니다.</div>
+    <label for="gName">운행자 이름</label><input id="gName" autocomplete="name">
+    <label for="gOrg">소속 (선택)</label><input id="gOrg" autocomplete="organization">
+    <label for="gPlate">차량번호</label><input id="gPlate" autocomplete="off" placeholder="예: 12가3456">
+    <label for="gPhone">연락처 (선택)</label><input id="gPhone" type="tel" inputmode="tel" autocomplete="tel">
+    <div class="row">
+      <div><label for="gPw">새 비밀번호 (4자 이상)</label><input id="gPw" type="password" autocomplete="new-password"></div>
+      <div><label for="gPw2">새 비밀번호 확인</label><input id="gPw2" type="password" autocomplete="new-password"></div>
+    </div>
+    <label for="gHint">비밀번호 힌트 (선택)</label><input id="gHint" autocomplete="off">
+    <div class="note" id="gPwNote"></div>
+    <div class="warn" id="gMsg" hidden></div>
+    <button class="btn" id="gSave" disabled style="margin-top:12px">등록</button>
+    <button class="link bad" id="gPwDel" hidden style="padding-left:0">비밀번호 삭제 (비밀번호 없이 사용)</button>
+    <button class="btn ghost" id="gCancel" hidden style="margin-top:8px">취소</button>
+  </div>
+  <div class="warn" id="homeAlert" hidden style="margin:0 0 12px"></div>
+  <div class="card">
+    <div class="ct">오늘 운행</div>
+    <div class="big2"><div><span>운행</span><b id="hmCnt">0회</b></div><div><span>운송료 (부가세 별도)</span><b id="hmSum">0원</b></div></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="hmCap" hidden>캡처 자동 입력</button>
+      <button class="btn ghost" id="hmAdd">직접 입력</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct" id="hmMonth">이번 달</div>
+    <div class="sum">
+      <span>운행 횟수</span><span id="hmMCnt">0회</span>
+      <span>운송료 (공급가액)</span><span id="hmMInc">0원</span>
+      <span>차량 지출</span><span id="hmMExp">0원</span>
+      <span class="t">운송료 − 차량 지출</span><span class="t" id="hmMNet">0원</span>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn ghost" id="hmHist">이번 달 내역</button>
+      <button class="btn ghost" id="hmFuel">주유 기록</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">최근 기록</div>
+    <div id="hmRecent"></div>
+  </div>
+  <details class="help"><summary>처음 사용하시나요?</summary><ul>
+    <li>보험사·렉카·카센터 등의 연락처는 아래 메뉴의 "연락처"에 있습니다.</li><li><b>비밀번호</b>: 위 "정보 수정"에서 비밀번호를 등록·변경·삭제할 수 있습니다. "잠그기"를 누르면 첫 화면으로 돌아갑니다.</li><li><b>1. 노선</b>: 기본 노선 70개가 처음부터 들어 있습니다. 운송 → 노선에서 추가·수정할 수 있습니다.</li>
+    <li><b>2. 운행 기록</b>: 운송 → 운행에서 캡처 자동 입력이나 직접 입력으로 그날 운행을 기록합니다.</li>
+    <li><b>3. 차량 관리</b>: 차량에서 주유·정비 지출을 적고 검사·보험 만기를 등록합니다.</li>
+    <li><b>4. 확인</b>: 운송 → 내역에서 월 합계와 입금을, 통계에서 연간 흐름을 봅니다.</li>
+    <li>아래 메뉴는 화면 맨 밑에 항상 있습니다: 홈, 운송, 차량, 보험·검사, 연락처, 통계.</li>
+  </ul></details>
+</section>
+
+<section id="calc" hidden>
+  <p class="desc">오늘 운행한 횟수를 기록하는 화면입니다.</p>
+  <details class="help"><summary>운행 화면 사용법</summary><ul><li><b>운송일</b>: 기록할 날짜입니다. 지난 날짜를 골라 뒤늦게 입력하거나 고칠 수 있습니다.</li><li><b>방법 1 · 캡처 자동 입력하기</b>: 우체국모바일의 "운송확인서 선택" 화면을 캡처해 고르면 번호·시간·경유국을 읽어 옵니다. 화면에 거리가 없어서, 경유국 이름으로 등록된 노선을 찾아 거리를 채웁니다. 노선, 거리, 톤수, 운송료를 확인하고 고친 뒤 저장하세요. 운송료 칸의 금액을 고치면 협의 운송료로 저장됩니다. 줄마다 육상일반·낱소포를 고를 수 있습니다. 등록되지 않은 노선이 있으면 "노선으로 등록할까요?"라고 묻습니다. 거리를 넣고 "노선으로 등록"을 누르면 노선에 추가되고 해당 운행에 바로 적용되며, 다음부터는 자동으로 찾습니다. "등록 안 함"을 누르면 그 줄에 거리를 직접 넣어 이번 운행만 계산할 수 있습니다. 등록되지 않은 줄마다 "노선 등록" 버튼도 있어서, 그 줄에 거리를 넣고 누르면 언제든 노선으로 등록됩니다. 운행하지 않은 확인서는 "이 확인서 삭제"로 목록에서 빼면 됩니다. 이미 저장한 확인서 번호는 다시 저장되지 않습니다.</li><li><b>방법 2 · 직접 입력하기</b>: 캡처 없이 출발지와 도착지를 골라 한 건씩 추가합니다.</li><li><b>출발지 / 도착지</b>: 출발지를 고르면 그 출발지의 도착지가 가까운 거리순으로 나옵니다. 도착지를 고르면 등록된 거리가 거리 칸에 채워지고 1회 운송료가 표시됩니다.</li><li><b>거리</b>: 실제 거리가 다르면 숫자를 고칠 수 있습니다. 고친 거리는 지금 추가하는 운행에만 적용됩니다. 앞으로도 계속 그 거리로 쓰려면 아래에 나오는 "이 거리를 노선에 저장"을 누르세요.</li><li><b>운송 종류</b>: 육상일반과 낱소포 중에서 고르면 그 단가표로 운송료가 계산됩니다. 도착지를 새로 고르면 육상일반(노선에 등록된 종류)으로 돌아가니, 낱소포 운행은 추가하기 전에 낱소포를 눌러 주세요.</li><li><b>운송료</b>: 단가표로 계산한 금액이 자동으로 채워집니다. 협의 운송료처럼 단가표와 다른 금액이면 숫자를 고쳐 넣으세요. 고친 운행은 "협의"로 표시되고, 노선에는 등록되지 않습니다(노선에는 거리만 저장되며 협의 금액은 저장하지 않습니다). 거리나 종류를 바꾸면 단가표 금액으로 다시 채워집니다.</li><li><b>운행 1회 추가</b>: 고른 노선을 그날 운행에 한 번 더합니다. 같은 노선을 여러 번 다녔으면 여러 번 누르거나 아래 +를 누릅니다.</li><li><b>이 날 운행</b>: 두 방법으로 기록한 운행이 모두 여기에 모입니다. + / −로 횟수를 늘리거나 줄입니다. "건별로 보기"를 펼치면 운행 한 건씩 거리·톤수·종류를 수정하거나 삭제할 수 있습니다.</li><li><b>○○일 운행과 동일하게 채우기</b>: 아직 기록이 없는 날에만 나옵니다. 가장 최근 운행일의 기록을 그대로 복사합니다.</li><li><b>목록에 없는 도착지 등록</b>: 도착지 목록에 없는 곳이면 눌러서 도착지 이름과 거리를 넣고 "노선 등록"을 누릅니다. 등록되면 바로 선택되고, 다음부터는 목록과 캡처 자동 입력에서 찾을 수 있습니다. 단가표에 없는 금액은 운송료 칸을 고쳐 협의 운송료로 넣습니다.</li><li><b>맨 위 금액</b>: 그날 운행 횟수와 운송료 합계입니다(부가세 별도).</li><li><b>주황색 경고</b>: 차량 메뉴에 등록한 검사·보험·정비 기한이 다가오면 표시됩니다.</li></ul></details>
+  <div class="card">
+    <label for="tDate" style="margin-top:0">운송일</label><input type="date" id="tDate">
+    <div class="daybar" style="margin-top:12px"><span id="dCnt">0회</span><span id="dSum">0원</span></div>
+    <div class="note" id="dayMsg"></div>
+  </div>
+  <div class="warn" id="remAlert" hidden style="margin:0 0 12px"></div>
+  <div class="card" id="impCard" hidden>
+    <div class="ct"><i>방법 1</i>캡처 자동 입력하기</div>
+    <div class="note" id="impMsg">우체국모바일 "운송확인서 선택" 화면을 캡처해서 고르면(여러 장 가능) 그날 운행을 한꺼번에 읽어 옵니다.</div>
+    <button class="btn" id="impBtn" style="margin-top:10px">캡처 자동 입력하기</button>
+    <input type="file" id="impFile" accept="image/*" multiple hidden>
+    <div id="impList" style="margin-top:6px"></div>
+    <button class="btn" id="impSave" hidden style="margin-top:10px"></button>
+    <button class="link bad" id="impCancel" hidden style="padding-left:0">불러온 목록 지우기</button>
+  </div>
+  <div class="card" id="noRoute" hidden>
+    <div class="note" style="margin-top:0">등록된 노선이 없습니다. 출발지·도착지·거리를 한 번 등록하면, 운행할 때마다 + 한 번으로 기록됩니다.</div>
+    <button class="btn" id="goRoutes" style="margin-top:10px">노선 등록하기</button>
+  </div>
+  <div class="card" id="rtCard" hidden>
+    <div class="ct"><i id="pNum">방법 2</i>직접 입력하기</div>
+    <div class="note" style="margin-top:0">출발지와 도착지를 골라 운행을 한 건씩 추가합니다.</div>
+    <label for="pFrom">출발지</label><select id="pFrom"></select>
+    <label for="pTo">도착지 (가까운 순)</label><select id="pTo"></select>
+    <button class="link" id="pNewBtn" style="padding-left:0">목록에 없는 도착지 등록</button>
+    <div class="warn" id="pNew" hidden style="margin:4px 0 6px">
+      <div class="n" id="pNewTitle"></div>
+      <label for="pNewTo">도착지 이름</label><input id="pNewTo" autocomplete="off">
+      <div class="row">
+        <div><label for="pNewKm">거리 (km)</label><input id="pNewKm" type="number" inputmode="decimal" step="0.1" min="0"></div>
+        <div><label for="pNewTon">톤수</label><select id="pNewTon"></select></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="pNewSave" disabled>노선 등록</button>
+        <button class="btn ghost" id="pNewCancel">취소</button>
+      </div>
+    </div>
+    <label for="pKm">거리 (km)</label><input id="pKm" type="number" inputmode="decimal" step="0.1" min="0" disabled>
+    <button class="link" id="pKmSave" hidden style="padding-left:0"></button>
+    <label>운송 종류</label>
+    <div class="seg" id="pType">
+      <button type="button" data-v="general" aria-pressed="true">육상일반</button>
+      <button type="button" data-v="parcel" aria-pressed="false">낱소포</button>
+    </div>
+    <label for="pFee">운송료 (원, 부가세 별도)</label><input id="pFee" type="number" inputmode="numeric" min="0" disabled>
+    <div class="note" id="pInfo"></div>
+    <button class="btn" id="pAdd" disabled style="margin-top:10px">운행 1회 추가</button>
+  </div>
+  <div class="card" id="dayCard">
+    <div class="ct">이 날 운행</div>
+    <div id="rtList"></div>
+    <details id="dayMore" style="margin-top:10px">
+      <summary>건별로 보기 (수정·삭제)</summary>
+      <div id="dayRows" style="margin-top:6px"></div>
+    </details>
+    <button class="btn ghost" id="copyBtn" hidden style="margin-top:10px"></button>
+  </div>
+</section>
+
+<section id="hist" hidden>
+  <p class="desc">저장한 운행을 월별로 확인하고 엑셀로 내보내는 화면입니다.</p>
+  <details class="help"><summary>내역 화면 사용법</summary><ul><li><b>조회 월</b>: 보고 싶은 달을 고릅니다.</li><li><b>공급가액</b>: 그 달 운송료 합계입니다(부가세 제외, 건별 원 미만 버림).</li><li><b>부가세 / 합계</b>: 공급가액의 10%(원 미만 버림)와, 이를 더한 금액입니다.</li><li><b>입금 확인</b>: 그 달 운송료가 들어오면 입금일과 금액을 적습니다. 계산한 합계와 다르면 차이를 보여줍니다.</li><li><b>목록 / 달력</b>: 달력으로 바꾸면 날짜별 운행 횟수와 금액이 한눈에 보이고, 날짜를 누르면 그날 운행 화면으로 갑니다.</li><li><b>수정</b>: 저장한 운행의 거리·톤수·종류를 고치면 운송료가 다시 계산됩니다. 운송료 칸을 직접 고치면 협의 운송료로 저장됩니다.</li><li><b>삭제</b>: 잘못 저장한 운행을 지웁니다. 한 번 누르면 "정말 삭제"로 바뀌고, 다시 눌러야 지워집니다.</li><li><b>엑셀로 내보내기</b>: 운행 내역, 일별 합계, 차량 지출 시트가 담긴 파일을 저장합니다.</li></ul></details>
+  <div class="card">
+    <label for="hMonth" style="margin-top:0">조회 월</label><input type="month" id="hMonth">
+    <div class="sum" style="margin-top:12px">
+      <span>운행 횟수</span><span id="sCnt">0회</span>
+      <span>공급가액</span><span id="sSup">0원</span>
+      <span>부가세 (10%)</span><span id="sVat">0원</span>
+      <span class="t">합계</span><span class="t" id="sTot">0원</span>
+    </div>
+    <button class="btn ghost" id="xlsBtn" hidden style="margin-top:12px">엑셀로 내보내기</button>
+    <div class="note" id="histMsg"></div>
+  </div>
+  <div class="card">
+    <b>입금 확인</b>
+    <div id="stDone" hidden>
+      <div class="note" id="stText" style="font-size:15px;color:var(--ink)"></div>
+      <button class="link bad" id="stUndo" style="padding-left:0">입금 확인 취소</button>
+    </div>
+    <div id="stForm">
+      <div class="row">
+        <div><label for="stDate">입금일</label><input type="date" id="stDate"></div>
+        <div><label for="stAmt">입금액 (원)</label><input id="stAmt" type="number" inputmode="numeric" min="0"></div>
+      </div>
+      <button class="btn ghost" id="stSave" disabled style="margin-top:10px">입금 확인 저장</button>
+      <div class="note">이 달 운송료가 입금되면 적어 두세요. 계산한 합계와 차이가 있으면 알려줍니다.</div>
+    </div>
+  </div>
+  <div class="seg" id="hView" style="margin-bottom:12px">
+    <button type="button" data-v="list" aria-pressed="true">목록</button>
+    <button type="button" data-v="cal" aria-pressed="false">달력</button>
+  </div>
+  <div class="card" id="hList"></div>
+  <div class="card" id="hCal" hidden></div>
+</section>
+
+<section id="routes" hidden>
+  <div class="card" id="preCard" hidden>
+    <b>세팅 자료 노선 불러오기</b>
+    <div class="note" id="preNote"></div>
+    <div class="row">
+      <div><label for="preTon">톤수</label><select id="preTon"></select></div>
+      <div><label>운송 종류</label><div class="seg" id="preType"><button type="button" data-v="general" aria-pressed="true">육상일반</button><button type="button" data-v="parcel" aria-pressed="false">낱소포</button></div></div>
+    </div>
+    <button class="btn" id="preBtn" style="margin-top:12px"></button>
+  </div>
+  <p class="desc">자주 다니는 구간을 한 번 등록해 두는 화면입니다.</p>
+  <details class="help"><summary>노선 화면 사용법</summary><ul><li><b>기본 노선</b>: 세팅 자료의 노선 70개는 처음부터 들어 있습니다(5톤, 육상일반). 노선이 하나도 없을 때는 자동으로 다시 채워집니다.</li><li><b>세팅 자료 노선 불러오기</b>: 기본 노선 중 지운 것이 있으면 맨 위에 다시 등록하는 버튼이 나옵니다.</li><li><b>운송거리</b>: 지도 거리가 아니라 우체국모바일 운송확인서에 표시된 km를 넣습니다.</li><li><b>톤수 / 운송 종류</b>: 단가표에서 적용할 칸을 정합니다. 같은 구간이라도 톤수나 종류가 다르면 노선을 따로 등록하세요.</li><li><b>수정</b>: 거리나 톤수를 바꾸면 그 뒤에 기록하는 운행부터 새 금액이 적용됩니다. 이미 저장한 운행 금액은 바뀌지 않습니다.</li><li><b>삭제</b>: 노선을 지워도 이미 저장한 운행 내역은 남습니다.</li></ul></details>
+  <div class="card">
+    <b id="rfTitle">노선 추가</b>
+    <label for="rFrom">출발지</label><input id="rFrom" list="rFromList" autocomplete="off"><datalist id="rFromList"></datalist>
+    <label for="rTo">도착지</label><input id="rTo" list="rToList" autocomplete="off"><datalist id="rToList"></datalist>
+    <div class="row">
+      <div><label for="rKm">운송거리 (km)</label><input id="rKm" type="number" inputmode="decimal" step="0.1" min="0"></div>
+      <div><label for="rTon">톤수</label><select id="rTon"></select></div>
+    </div>
+    <label>운송 종류</label>
+    <div class="seg" id="rType">
+      <button type="button" data-v="general" aria-pressed="true">육상일반</button>
+      <button type="button" data-v="parcel" aria-pressed="false">낱소포</button>
+    </div>
+    <div class="note" id="rPrev">거리는 우체국모바일 운송확인서에 표시된 km를 그대로 넣으세요.</div>
+    <button class="btn" id="rSave" disabled style="margin-top:10px">노선 추가</button>
+    <button class="btn ghost" id="rCancel" hidden style="margin-top:8px">수정 취소</button>
+  </div>
+  <div class="card">
+    <input id="rQ" type="search" placeholder="등록한 노선 검색" autocomplete="off" aria-label="등록한 노선 검색">
+    <div id="rList" style="margin-top:8px"></div>
+  </div>
+</section>
+
+<section id="car" hidden>
+  <p class="desc">차량 지출을 기록하고 검사·보험·정비 기한을 알려주는 화면입니다.</p>
+  <details class="help"><summary>차량 화면 사용법</summary><ul><li><b>월 요약</b>: 그 달의 유류비, 정비·소모품, 보험료, 기타 지출과 합계입니다. "운송료 − 차량 지출"은 그 달 운송료(공급가액)에서 차량 지출을 뺀 금액입니다.</li><li><b>지출 기록 추가</b>: 주유, 정비·소모품, 기타(통행료·세금 등)를 날짜와 금액으로 적습니다.</li><li><b>단가 / 주유량</b>: 금액과 리터당 단가를 넣으면 주유량이 자동으로 계산됩니다. 주유량을 직접 고쳐도 됩니다.</li><li><b>계기판 주행거리</b>: 주유할 때 함께 적으면 지난 주유 이후 달린 거리와 연비(km/L)가 계산됩니다. 매번 가득 주유한다고 보고 계산합니다.</li><li>차량 정보·연락처는 아래 메뉴의 "연락처"로 옮겼습니다.</li><li><b>정비·소모품 교체주기 안내</b>: 제목을 누르면 펼쳐집니다. 차량 종류(승용차, 중형 화물차, 대형 화물차)를 고르면 항목별 권장 교체·점검 주기가 나옵니다. "알림 추가"를 누르면 그 주기가 알림 입력 칸에 채워집니다.</li><li>자동차 검사와 보험 알림은 아래 메뉴의 "보험·검사"로 옮겼습니다.</li><li><b>알림 – 주기 교체</b>: 엔진오일·타이어처럼 일정 km나 개월마다 바꾸는 항목입니다. 1,000km 또는 30일 이내로 다가오면 알려줍니다.</li><li><b>알림 – 만기일</b>: 검사·보험이 아닌 그 밖의 날짜입니다(면허 갱신, 교육, 세금 납부, 계약 만료 등). 30일 전부터 알려줍니다.</li><li>기한이 다가오면 앱 화면 맨 위 경고와 함께 폰 알림으로도 알려줍니다.</li></ul></details>
+  <div class="card">
+    <label for="cMonth" style="margin-top:0">조회 월</label><input type="month" id="cMonth">
+    <div class="sum" style="margin-top:12px">
+      <span>유류비</span><span id="cFuel">0원</span>
+      <span>정비·소모품</span><span id="cFix">0원</span>
+      <span>보험료</span><span id="cIns">0원</span>
+      <span>기타 지출</span><span id="cEtc">0원</span>
+      <span class="t">차량 지출 합계</span><span class="t" id="cTot">0원</span>
+      <span>운송료 (공급가액)</span><span id="cInc">0원</span>
+      <span>운송료 − 차량 지출</span><span id="cNet">0원</span>
+    </div>
+    <div class="note" id="cStat"></div>
+  </div>
+  <div class="card">
+    <b>지출 기록 추가</b>
+    <div class="seg three" id="cCat" style="margin-top:8px">
+      <button type="button" data-v="fuel" aria-pressed="true">주유</button>
+      <button type="button" data-v="fix" aria-pressed="false">정비·소모품</button>
+      <button type="button" data-v="etc" aria-pressed="false">기타</button>
+    </div>
+    <div class="row">
+      <div><label for="cDate">날짜</label><input type="date" id="cDate"></div>
+      <div><label for="cAmt">금액 (원)</label><input id="cAmt" type="number" inputmode="numeric" min="0"></div>
+    </div>
+    <div class="row" id="cFuelRow">
+      <div><label for="cPrice">단가 (원/L)</label><input id="cPrice" type="number" inputmode="numeric" min="0"></div>
+      <div><label for="cLit">주유량 (L)</label><input id="cLit" type="number" inputmode="decimal" step="0.01" min="0"></div>
+    </div>
+    <label for="cOdo">계기판 주행거리 (km)</label><input id="cOdo" type="number" inputmode="numeric" min="0">
+    <label for="cMemo">내용</label><input id="cMemo" list="cMemoList" autocomplete="off">
+    <datalist id="cMemoList"><option value="경유"><option value="요소수"><option value="엔진오일"><option value="타이어"><option value="브레이크"><option value="배터리"><option value="통행료"><option value="주차비"><option value="세차"><option value="보험료"><option value="자동차세"><option value="검사 수수료"></datalist>
+    <button class="btn" id="cSave" disabled style="margin-top:12px">기록 저장</button>
+    <div class="note" id="cMsg">금액과 단가를 넣으면 주유량이 자동 계산됩니다. 계기판 주행거리를 함께 적으면 연비가 나옵니다.</div>
+  </div>
+  <div class="card">
+    <details id="gdBox">
+    <summary>정비·소모품 교체주기 안내</summary>
+    <div class="note">차량 종류를 고르면 항목별 권장 주기가 나옵니다.</div>
+    <label for="gdType">차량 종류</label>
+    <select id="gdType"></select>
+    <div class="note" id="gdSrc"></div>
+    <div id="gdList" style="margin-top:6px"></div>
+    <div class="warn" style="margin-top:10px">아래 주기는 일반적인 권장값입니다. 차종·연식·엔진·운행 조건에 따라 달라지니, 내 차의 취급설명서와 정비소 안내를 우선하세요. 짐을 많이 싣거나 짧은 거리를 자주 다니는 가혹 조건에서는 더 일찍 교체합니다.</div>
+    </details>
+  </div>
+  <div class="card">
+    <b>정비·기한 알림</b>
+    <div class="note">자동차 검사와 보험은 아래 메뉴의 "보험·검사"에서 관리합니다.</div>
+    <div id="remList" style="margin-top:6px"></div>
+    <div id="remHostCar">
+    <details id="remForm" style="margin-top:10px">
+      <summary id="remSum">알림 추가</summary>
+      
+      <datalist id="mNameList"><option value="엔진오일 교체"><option value="타이어 교체"><option value="브레이크 점검"><option value="에어필터 교체"><option value="연료필터 교체"><option value="화물운송 종사자격 교육"></datalist>
+      <div class="seg" id="mKind" style="margin-top:4px">
+        <button type="button" data-v="insp" aria-pressed="true">자동차 검사</button>
+        <button type="button" data-v="ins" aria-pressed="false">보험</button>
+        <button type="button" data-v="cycle" aria-pressed="false">주기 교체</button>
+        <button type="button" data-v="date" aria-pressed="false">만기일</button>
+      </div>
+      <div class="note" id="mKindDesc" style="margin:8px 0 0"></div>
+      <div id="mNameBox"><label for="mName">이름</label><input id="mName" list="mNameList" autocomplete="off"></div>
+      <div id="mInsp">
+        <label>검사 종류</label>
+        <div class="seg" id="mInspType">
+          <button type="button" data-v="정기검사" aria-pressed="true">정기검사</button>
+          <button type="button" data-v="종합검사" aria-pressed="false">종합검사</button>
+        </div>
+        <div class="row">
+          <div><label for="mInspDue">검사 유효기간 만료일</label><input type="date" id="mInspDue"></div>
+          <div><label for="mInspCyc">검사 주기</label><select id="mInspCyc"><option value="6">6개월</option><option value="12">1년</option><option value="24">2년</option></select></div>
+        </div>
+        <div class="note">만료일과 주기는 자동차등록증이나 한국교통안전공단(TS) 검사 조회에서 확인하세요. 검사는 만료일 90일 전부터 31일 후까지 받을 수 있습니다.</div>
+      </div>
+      <div id="mInsBox" hidden>
+        <div class="row">
+          <div><label for="iName">보험 종류</label><input id="iName" list="iNameList" autocomplete="off"></div>
+          <div><label for="iCo">보험사</label><input id="iCo" autocomplete="off"></div>
+        </div>
+        <datalist id="iNameList"><option value="자동차보험"><option value="적재물배상책임보험"><option value="화물공제"><option value="운전자보험"></datalist>
+        <div class="row">
+          <div><label for="iStart">보험 시작일</label><input type="date" id="iStart"></div>
+          <div><label for="iDue">보험 만기일</label><input type="date" id="iDue"></div>
+        </div>
+        <div class="row">
+          <div><label for="iAmt">보험료 (원)</label><input id="iAmt" type="number" inputmode="numeric" min="0"></div>
+          <div><label for="iPay">납부일</label><input type="date" id="iPay"></div>
+        </div>
+        <label style="display:flex;gap:8px;align-items:center;color:var(--ink);font-size:15px;margin-top:12px"><input type="checkbox" id="iLog" checked style="width:22px;min-height:22px;height:22px"> 보험료를 납부일의 차량 지출에 포함</label>
+        <div class="note" id="iNote">만기 30일 전부터 운행 화면에 알림이 뜹니다.</div>
+      </div>
+      <div id="mCycle" hidden>
+        <div class="row">
+          <div><label for="mKm">교체 주기 (km)</label><input id="mKm" type="number" inputmode="numeric" min="0"></div>
+          <div><label for="mMon">교체 주기 (개월)</label><input id="mMon" type="number" inputmode="numeric" min="0"></div>
+        </div>
+        <div class="row">
+          <div><label for="mLastKm">마지막 교체 시 주행거리</label><input id="mLastKm" type="number" inputmode="numeric" min="0"></div>
+          <div><label for="mLastDate">마지막 교체일</label><input type="date" id="mLastDate"></div>
+        </div>
+        <div class="note">주기는 km와 개월 중 하나만 넣어도 됩니다. 차량 설명서나 정비소 권장 주기를 넣으세요.</div>
+      </div>
+      <div id="mDateBox" hidden><label for="mDue">만기일</label><input type="date" id="mDue"></div>
+      <button class="btn" id="mSave" disabled style="margin-top:12px">알림 추가</button>
+    </details>
+    </div>
+  </div>
+  <div class="card" id="cList"></div>
+</section>
+
+<section id="ins" hidden>
+  <p class="desc">자동차 검사와 보험의 기간·만기를 관리하는 화면입니다.</p>
+  <details class="help"><summary>보험·검사 화면 사용법</summary><ul>
+    <li><b>자동차 검사</b>: 정기검사·종합검사의 유효기간 만료일과 주기를 등록하면, 검사받을 수 있는 기간(만료일 90일 전 ~ 31일 후)과 남은 날을 알려줍니다. 검사를 받은 뒤 "검사 완료"를 누르면 다음 만료일로 넘어갑니다.</li>
+    <li><b>보험</b>: 보험 종류, 보험사, 보험기간, 보험료를 등록하면 만기 30일 전부터 알려줍니다. 보험료는 납부일의 차량 지출에 포함됩니다. "갱신"을 누르면 새 기간으로 다시 등록합니다.</li>
+    <li>기한이 다가오면 홈 화면과 운행 화면 맨 위에 경고가 표시되고, 폰 알림으로도 알려줍니다.</li>
+    <li>엔진오일 같은 정비·소모품 알림은 "차량" 메뉴에 있습니다.</li>
+  </ul></details>
+  <div class="card">
+    <div class="ct">자동차 검사</div>
+    <div id="inspList"></div>
+  </div>
+  <div class="card">
+    <div class="ct">보험</div>
+    <div id="insList"></div>
+  </div>
+  <div class="card">
+    <div id="remHostIns"></div>
+  </div>
+</section>
+
+<section id="contact" hidden>
+  <p class="desc">급할 때 찾는 연락처와 차량 정보를 모아 둔 화면입니다.</p>
+  <div class="warn" id="telMsg" hidden style="margin:0 0 12px"></div>
+  <details class="help"><summary>연락처 화면 사용법</summary><ul>
+    <li><b>내 연락처·차량 정보</b>: 보험사, 렉카(견인), 펑크 수리, 카센터, 공업사, 기타 연락처와 차량 정보(차대번호, 타이어 규격 등)를 등록해 둡니다. 구분별로 나뉘어 표시됩니다.</li>
+    <li><b>연락처·정보 추가</b>: 구분을 고르고 이름과 전화번호를 넣습니다.</li>
+    <li><b>보험사 사고접수·긴급출동 번호</b>: 보험사별 번호가 미리 들어 있습니다. "내 목록에 추가"를 누르면 위 목록에 올라갑니다. 번호는 바뀔 수 있으니 보험 증권과 대조해 두세요.</li>
+    <li><b>전화 걸기</b>: 누르면 폰의 전화 화면이 열립니다.</li><li><b>번호 복사</b>: 번호를 복사해 문자나 메모에 붙여넣을 때 씁니다.</li>
+  </ul></details>
+  <div class="card">
+    <div class="ct">내 연락처·차량 정보</div>
+    <div id="infoList"></div>
+    <details id="infoForm" style="margin-top:10px">
+      <summary>연락처·정보 추가</summary>
+      <label for="nCat">구분</label>
+      <select id="nCat"></select>
+      <label for="nLabel" id="nLabelLab">이름</label><input id="nLabel" autocomplete="off">
+      <label for="nValue" id="nValueLab">전화번호</label><input id="nValue" autocomplete="off">
+      <button class="btn" id="nSave" disabled style="margin-top:12px">추가</button>
+    </details>
+  </div>
+  <div class="card">
+    <details id="dirBox" open>
+      <summary>보험사 사고접수·긴급출동 번호</summary>
+      <div class="note">보험사는 대부분 사고접수와 긴급출동을 같은 번호에서 받습니다(24시간). 번호는 바뀔 수 있으니 내 보험 증권의 번호와 같은지 한 번 확인해 두세요. "내 목록에 추가"를 누르면 위 목록에 올라갑니다.</div>
+      <div id="dirList" style="margin-top:6px"></div>
+    </details>
+  </div>
+</section>
+
+<section id="stat" hidden>
+  <p class="desc">한 해의 운송료와 차량 지출을 월별로 비교하는 화면입니다.</p>
+  <details class="help"><summary>통계 화면 사용법</summary><ul>
+    <li><b>연도</b>: 화살표로 보고 싶은 해를 바꿉니다.</li>
+    <li><b>그래프</b>: 월별 운송료(공급가액)와 차량 지출을 나란히 보여줍니다. 막대를 누르면 금액이 나옵니다.</li>
+    <li><b>월별 표</b>: 운행 횟수, 운송료, 지출, 차액, 연비, 입금 여부를 한 줄씩 보여줍니다.</li>
+    <li><b>미입금</b>: 운행 기록은 있는데 내역 화면에서 입금 확인을 하지 않은 달의 합계(부가세 포함)입니다.</li>
+    <li><b>백업</b>: 모든 기록을 파일 하나로 저장하고, 필요할 때 다시 불러옵니다.</li><li><b>입력한 자료 초기화</b>: 입력한 자료를 모두 지우고 처음 상태로 돌립니다. 비밀번호를 넣어야 실행되고, 버튼을 두 번 눌러야 지워집니다. 비밀번호를 등록하지 않았다면 "초기화"라고 입력합니다.</li>
+  </ul></details>
+  <div class="card">
+    <div class="yr"><button id="yPrev" aria-label="이전 해">‹</button><b id="yLabel"></b><button id="yNext" aria-label="다음 해">›</button></div>
+    <div class="sum" style="margin-top:12px">
+      <span>운행 횟수</span><span id="yCnt">0회</span>
+      <span>운송료 (공급가액)</span><span id="yInc">0원</span>
+      <span>차량 지출</span><span id="yExp">0원</span>
+      <span class="t">운송료 − 차량 지출</span><span class="t" id="yNet">0원</span>
+      <span>미입금 (부가세 포함)</span><span id="yDue">0원</span>
+    </div>
+  </div>
+  <div class="card">
+    <b>월별 운송료와 차량 지출</b>
+    <div class="legend"><span><i style="background:var(--s1)"></i>운송료</span><span><i style="background:var(--s2)"></i>차량 지출</span></div>
+    <div class="chart" id="chart"></div>
+  </div>
+  <div class="card"><div style="overflow-x:auto"><table class="mt" id="mTbl"></table></div></div>
+  <div class="card">
+    <b>자료 백업</b>
+    <div class="note">노선, 운행, 차량 기록, 알림을 모두 파일 하나로 저장합니다. 불러오면 같은 날짜와 같은 항목은 파일 내용으로 바뀌고, 나머지는 그대로 남습니다.</div>
+    <button class="btn ghost" id="bkSave" hidden style="margin-top:10px">백업 파일 저장</button>
+    <button class="btn ghost" id="bkLoad" style="margin-top:8px">백업 파일 불러오기</button>
+    <input type="file" id="bkFile" accept=".json,application/json" hidden>
+    <div class="note" id="bkMsg"></div>
+    <details id="rsBox" style="margin-top:14px">
+      <summary>입력한 자료 초기화</summary>
+      <div class="warn" style="margin-top:8px">노선, 운행 기록, 차량 지출, 정비 알림, 검사·보험, 연락처, 입금 확인을 모두 지웁니다. 지운 자료는 되돌릴 수 없으니, 필요하면 먼저 위에서 백업 파일을 저장하세요.</div>
+      <label style="display:flex;gap:8px;align-items:center;color:var(--ink);font-size:15px;margin-top:12px"><input type="checkbox" id="rsProf" style="width:22px;min-height:22px;height:22px"> 운행자·차량 정보와 비밀번호도 함께 지우기</label>
+      <label for="rsPw" id="rsPwLab">비밀번호</label><input id="rsPw" type="password" autocomplete="current-password">
+      <div class="warn" id="rsErr" hidden></div>
+      <button class="btn" id="rsBtn" style="margin-top:12px;background:var(--bad);color:#fff">초기화</button>
+      <div class="note" id="rsMsg"></div>
+    </details>
+  </div>
+</section>
+
+<section id="rate" hidden>
+  <p class="desc">계약 단가표를 확인하는 화면입니다.</p>
+  <details class="help"><summary>단가표 보는 법</summary><ul><li><b>행</b>은 거리 구간입니다. "8"은 6km 이상 8km 미만을 뜻합니다.</li><li><b>열</b>은 톤수입니다. 육상일반과 낱소포는 위 버튼으로 바꿔 봅니다.</li><li>금액은 1회 운송료이며 원 미만을 버린 값입니다(부가세 별도).</li><li>운행 화면의 직접 입력에서 도착지를 골라 두면 해당 칸이 표시됩니다.</li></ul></details>
+  <div class="card">
+    <div class="seg" id="tType">
+      <button type="button" data-v="general" aria-pressed="true">육상일반</button>
+      <button type="button" data-v="parcel" aria-pressed="false">낱소포</button>
+    </div>
+    <div class="note">행은 거리(km 미만), 열은 톤수입니다. 금액은 원 미만을 버린 값이며 부가세 별도입니다.</div>
+    <div class="tblwrap" style="margin-top:10px"><table id="tbl"></table></div>
+  </div>
+</section>
+</div>
+<nav class="bnav" id="topTabs" role="tablist" aria-label="메뉴">
+  <button role="tab" data-top="home" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>홈</button>
+  <button role="tab" data-top="trans" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 7h11v9H2zM13 10h5l4 3v3h-9z"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>운송</button>
+  <button role="tab" data-top="car" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5a4.5 4.5 0 0 0-5.9 5.6L3.5 16.2a1.6 1.6 0 0 0 0 2.3l2 2a1.6 1.6 0 0 0 2.3 0l5.1-5.1a4.5 4.5 0 0 0 5.6-5.9l-2.8 2.8-2.6-.6-.6-2.6z"/></svg>차량</button>
+  <button role="tab" data-top="ins" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5.5c0 4.3 2.9 7.6 7 9.5 4.1-1.9 7-5.2 7-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>보험·검사</button>
+  <button role="tab" data-top="contact" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3h3l1.5 4.5-2 1.5a12 12 0 0 0 6 6l1.5-2 4.5 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 4.5 5a2 2 0 0 1 2-2z"/></svg>연락처</button>
+  <button role="tab" data-top="stat" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>통계</button>
+</nav>
+<script src="xlsx.full.min.js"></script>
+<script>
+/* 설치 앱 전용: 저장 복원, 파일 저장, 캡처 글자 인식을 기기 기능에 연결한다 */
+(function(){
+  if(!window.Native)return;
+  try{if(!localStorage.getItem("freight-v2")){const s=Native.loadPersist();if(s)localStorage.setItem("freight-v2",s)}}catch(e){}
+  const b64=buf=>{let s="";const u=new Uint8Array(buf);for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s)};
+  const toB64=async d=>typeof d==="string"?b64(new TextEncoder().encode(d).buffer):d instanceof Blob?b64(await d.arrayBuffer()):d instanceof ArrayBuffer?b64(d):b64(d.buffer.slice(d.byteOffset,d.byteOffset+d.byteLength));
+  const downloads={save:async({filename,data})=>{const r=Native.saveFile(filename,await toB64(data));if(r!=="ok")throw {code:"unavailable",message:r};return {status:"saved"}}};
+  const pending={};
+  window.__ocrDone=(id,res)=>{const p=pending[id];if(p){delete pending[id];p(res)}};
+  const ocr=async file=>{const data=await toB64(file);return new Promise(res=>{const id="o"+Date.now()+Math.random().toString(36).slice(2,6);pending[id]=res;Native.ocr(id,data)})};
+  const pad=n=>String(n).padStart(2,"0");
+  /* "운송확인서 선택" 화면에서 인식한 글자 줄({t,x,y,w,h})을 운송확인서 목록으로 바꾼다 */
+  function parseList(r){
+    const W=r.w||1080, LABELS=["운송확인서번호","운행시간","경유국","운송편명","차량용적","차량번호"], L=[];
+    for(const o of r.lines||[]){
+      const t=String(o.t||"").trim(), flat=t.replace(/\s/g,"");let lab=null,val=t;
+      for(const k of LABELS)if(flat.startsWith(k)){
+        lab=k;let i=0,j=0;
+        while(i<t.length&&j<k.length){if(/\s/.test(t[i])){i++;continue}if(t[i]===k[j]){i++;j++}else break}
+        val=t.slice(i).trim();break;
+      }
+      const h=o.h||30;L.push({lab,val,x:o.x,h,cy:o.y+h/2,merged:!!(lab&&val)});
+    }
+    L.sort((a,b)=>a.cy-b.cy);
+    /* 같은 줄에서 조각난 값은 하나로 잇는다 */
+    for(let i=0;i<L.length;i++){
+      const p=L[i];if(p.lab)continue;
+      for(let j=i+1;j<L.length&&L[j].cy-p.cy<p.h*0.5;j++){
+        const q=L[j];if(q.lab||Math.min(p.x,q.x)<W*0.4)continue;
+        if(q.x<p.x){p.val=q.val+" "+p.val;p.x=q.x}else p.val+=" "+q.val;
+        L.splice(j,1);j--;
+      }
+    }
+    const NO=/(?:^|[^\d])(\d{10,})\s*$/, anchors=L.filter(l=>NO.test(l.val));
+    const xs=anchors.filter(a=>!a.merged).map(a=>a.x), vx=xs.length?Math.min(...xs)-W*0.04:W*0.4;
+    const isVal=l=>l.merged||(!l.lab&&l.x>=vx), out=[];
+    anchors.forEach((a,i)=>{
+      const y0=a.cy-a.h*0.6, y1=i+1<anchors.length?anchors[i+1].cy-anchors[i+1].h*0.6:Infinity;
+      const reg=L.filter(l=>l.cy>=y0&&l.cy<y1), vals=reg.filter(l=>l.val&&isVal(l));
+      const DT=/(\d{4})\s*[-.]\s*(\d{1,2})\s*[-.]\s*(\d{1,2})/, dtL=vals.find(l=>l!==a&&DT.test(l.val));
+      if(!dtL)return;
+      const d=dtL.val.match(DT), tm=dtL.val.slice(d.index+d[0].length).match(/(\d{1,2})\s*[:;.]\s*(\d{2})/);
+      const tonLab=reg.find(l=>l.lab==="차량용적"), nameLab=reg.find(l=>l.lab==="운송편명"), NUM=/(\d+(\.\d+)?)/;
+      let tonL=vals.find(l=>/\d+(\.\d+)?\s*톤/.test(l.val));
+      if(!tonL&&tonLab)tonL=tonLab.merged&&NUM.test(tonLab.val)?tonLab:vals.find(l=>l!==dtL&&l!==a&&Math.abs(l.cy-tonLab.cy)<tonLab.h*0.8&&NUM.test(l.val));
+      let nameL=null;
+      if(nameLab){
+        nameL=nameLab.merged?nameLab:vals.filter(l=>l!==dtL&&l!==a&&l!==tonL).sort((p,q)=>Math.abs(p.cy-nameLab.cy)-Math.abs(q.cy-nameLab.cy))[0]||null;
+        if(nameL&&Math.abs(nameL.cy-nameLab.cy)>nameLab.h*1.2)nameL=null;
+      }
+      const endY=nameL?nameL.cy:tonL?tonL.cy:Infinity;
+      let stops=vals.filter(l=>l.cy>dtL.cy+1&&l.cy<endY-1&&l!==nameL&&l!==tonL&&l!==a).map(l=>l.val.replace(/\s/g,"")).filter(v=>(v.match(/[가-힣]/g)||[]).length>=2);
+      let name=nameL?nameL.val:"";
+      if(!nameL&&tonL&&stops.length>2)name=stops.pop();
+      if(stops.length<2)return;
+      out.push({no:"C"+a.val.match(NO)[1],date:d[1]+"-"+pad(d[2])+"-"+pad(d[3]),time:tm?pad(tm[1])+":"+tm[2]:"",stops,name,ton:tonL?parseFloat(tonL.val.match(NUM)[1]):0});
+    });
+    return out;
+  }
+  /* 글자 인식이 "우체국", "서울" 같은 공통 부분을 한 글자 틀리게 읽었을 때만 바로잡는다.
+     국 이름 자체(예: 강동/강북)는 건드리지 않는다. */
+  const lev=(a,b)=>{const m=a.length,n=b.length;let p=[...Array(n+1).keys()];for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]};
+  const core=v=>v.replace(/^서울/,"").replace(/우체국$/,"");
+  function snapName(s,names){
+    const keys=new Set(names.map(core)), known=v=>keys.has(core(v));
+    if(known(s))return s;
+    let t=s;
+    for(const suf of ["우편집중국","물류센터","우체국"]){
+      const tail=t.slice(-suf.length);
+      if(tail===suf)break;
+      if(t.length>suf.length&&lev(tail,suf)<=1){t=t.slice(0,-suf.length)+suf;break}
+    }
+    if(known(t))return t;
+    if(t.length>5&&t.slice(0,2)!=="서울"&&(t[0]==="서"||t[1]==="울")){const u="서울"+t.slice(2);if(known(u))return u}
+    return t;
+  }
+  const knownNames=()=>{const set=new Set();try{for(const o of origins())set.add(o);for(const r of routes.values()){set.add(r.from);set.add(r.to)}}catch(e){}return [...set].filter(Boolean)};
+  const sample=async()=>{throw {code:"sampling_disabled"}};
+  sample.limits=async()=>({images:{maxCount:10,mediaTypes:["image/png","image/jpeg","image/webp"]}});
+  sample.json=async(prompt,opts)=>{
+    const out=[],seen=new Set(),names=knownNames();
+    for(const f of [].concat((opts&&opts.images)||[])){
+      const r=await ocr(f);if(!r||r.error)throw {code:"image_rejected",message:r&&r.error};
+      for(const e of parseList(r))if(!seen.has(e.no)){seen.add(e.no);e.stops=e.stops.map(v=>snapName(v,names));out.push(e)}
+    }
+    return out;
+  };
+  window.claude={use:async n=>n==="downloads"?downloads:n==="sample"?sample:null};
+  window.__parseList=parseList;window.__snapName=snapName;
+})();
+</script>
+<script>
+const RATES={"tons":[1.4,2.5,4.5,5,8,11,18,25],"general":[[2,34350.5,37904,40273,42642,43826.5,46195.5,48564.5,52118],[4,37904,40273,43826.5,46195.5,47380,50933.5,58040.5,58040.5],[6,42642,45011,48564.5,49749,52118,54487,60409.5,63963],[8,46195.5,47380,52118,52118,53302.5,59225,68701,69885.5],[10,48564.5,49749,54487,56856,58040.5,61594,72254.5,75808],[12,50933.5,52118,56856,60409.5,61594,63963,74623.5,76992.5],[14,53302.5,54487,59225,63963,66332,67516.5,75808,76992.5],[16,53302.5,56856,61594,66332,68701,71070,82915,82915],[18,56856,58040.5,62778.5,69885.5,72254.5,75808,90022,93575.5],[20,58040.5,60409.5,65147.5,72254.5,75808,79361.5,99498,106605],[23,59225,63963,67516.5,74623.5,78177,84099.5,101867,114896.5],[26,62778.5,68701,69885.5,78177,80546,86468.5,106605,120819],[29,65147.5,71070,72254.5,81730.5,84099.5,91206.5,113712,120819],[32,68701,74623.5,75808,84099.5,88837.5,94760,118450,126741.5],[35,72254.5,76992.5,78177,87653,91206.5,98313.5,124372.5,133848.5],[38,72254.5,79361.5,80546,90022,95944.5,103051.5,126741.5,140955.5],[41,74623.5,84099.5,84099.5,93575.5,97129,105420.5,132664,142140],[44,75808,87653,88837.5,97129,100682.5,108974,138586.5,142140],[47,76992.5,88837.5,90022,99498,104236,112527.5,140955.5,144509],[50,76992.5,90022,92391,101867,107789.5,116081,143324.5,146878],[55,79361.5,92391,97129,107789.5,113712,123188,148062.5,150431.5],[60,79361.5,94760,100682.5,111343,116081,126741.5,156354,169383.5],[65,82915,99498,105420.5,116081,124372.5,133848.5,159907.5,170568],[70,84099.5,103051.5,108974,119634.5,130295,135033,167014.5,172937],[75,87653,106605,113712,123188,130295,139771,175306,176490.5],[80,88837.5,110158.5,117265.5,127926,136217.5,145693.5,175306,178859.5],[85,92391,112527.5,122003.5,132664,140955.5,150431.5,178859.5,183597.5],[90,93575.5,114896.5,125557,136217.5,143324.5,153985,187151,187151],[95,94760,116081,129110.5,137402,151616,167014.5,200180.5,206103],[100,95944.5,117265.5,132664,144509,156354,170568,207287.5,207287.5],[110,98313.5,120819,139771,150431.5,159907.5,171752.5,213210,228608.5],[120,101867,126741.5,145693.5,155169.5,165830,180044,215579,228608.5],[130,104236,132664,150431.5,163461,170568,187151,226239.5,251114],[140,107789.5,138586.5,155169.5,168199,182413,194258,233346.5,253483],[150,113712,144509,163461,174121.5,189520,203734,249929.5,267697],[160,117265.5,146878,169383.5,181228.5,195442.5,208472,255852,274804],[170,120819,150431.5,178859.5,187151,204918.5,217948,266512.5,285464.5],[180,124372.5,152800.5,181228.5,194258,214394.5,222686,272435,292571.5],[190,127926,162276.5,187151,197811.5,220317,230977.5,278357.5,300863],[200,129110.5,168199,194258,202549.5,223870.5,236900,287833.5,310339],[220,133848.5,174121.5,201365,214394.5,236900,252298.5,297309.5,322184],[240,138586.5,181228.5,210841,226239.5,248745,260590,312708,337582.5],[260,142140,187151,219132.5,236900,260590,273619.5,328106.5,352981],[280,146878,195442.5,227424,247560.5,278357.5,286649,344689.5,369564],[300,152800.5,200180.5,232162,254667.5,284280,299678.5,362457,389700.5],[320,155169.5,207287.5,241638,264143.5,287833.5,311523.5,367195,397992],[340,159907.5,210841,248745,283095.5,294940.5,323368.5,379040,408652.5],[360,165830,216763.5,262959,284280,306785.5,337582.5,413390.5,443003],[380,168199,217948,264143.5,291387,317446,348243,431158,457217],[400,174121.5,226239.5,272435,298494,328106.5,361272.5,458401.5,479722.5],[430,177675,233346.5,283095.5,307970,338767,377855.5,459586,503412.5],[460,182413,240453.5,292571.5,313892.5,361272.5,390885,461955,506966],[490,187151,245191.5,298494,329291,377855.5,408652.5,482091.5,528287],[520,191889,248745,310339,343505,387331.5,424051,496305.5,544870],[550,196627,257036.5,326922,355350,405099,439449.5,522364.5,563822],[580,201365,261774.5,335213.5,356534.5,407468,441818.5,525918,588696.5],[610,208472,270066,345874,362457,414575,448925.5,527102.5,612386.5],[640,213210,275988.5,356534.5,371933,428789,464324,541316.5,636076.5],[670,217948,281911,360088,376671,444187.5,467877.5,550792.5,659766.5],[700,222686,289018,362457,387331.5,456032.5,491567.5,576851.5,683456.5],[750,227424,316261.5,380224.5,395623,472615.5,518811,607648.5,722545],[800,236900,326922,386147,402730,493936.5,536578.5,638445.5,761633.5],[850,244007,335213.5,402730,411021.5,509335,555530.5,664504.5,800722],[900,252298.5,345874,418128.5,419313,531840.5,576851.5,695301.5,839810.5]],"parcel":[[2,42320,50255,60835,64802.5,80672.5,93897.5,128282.5,161345],[4,46287.5,54222.5,66125,68770,83317.5,99187.5,137540,167957.5],[6,51577.5,58190,70092.5,74060,88607.5,103155,140185,174570],[8,55545,62157.5,74060,76705,91252.5,108445,149442.5,179860],[10,58190,64802.5,76705,80672.5,95220,111090,154732.5,186472.5],[12,60835,67447.5,79350,85962.5,99187.5,115057.5,156055,187795],[14,63480,70092.5,81995,89930,105800,119025,157377.5,189117.5],[16,63480,72737.5,84640,92575,108445,122992.5,166635,195730],[18,67447.5,74060,85962.5,95220,111090,128282.5,173247.5,206310],[20,68770,76705,88607.5,97865,115057.5,132250,183827.5,222180],[23,70092.5,80672.5,92575,101832.5,117702.5,137540,186472.5,231437.5],[26,74060,85962.5,93897.5,104477.5,120347.5,140185,191762.5,238050],[29,76705,88607.5,97865,108445,125637.5,145475,199697.5,238050],[32,80672.5,92575,100510,112412.5,130927.5,149442.5,206310,243340],[35,84640,95220,103155,116380,133572.5,153410,212922.5,252597.5],[38,84640,99187.5,107122.5,119025,137540,158700,215567.5,260532.5],[41,87285,103155,111090,122992.5,140185,161345,222180,261855],[44,88607.5,107122.5,115057.5,126960,142830,165312.5,227470,261855],[47,89930,109767.5,117702.5,129605,148120,169280,231437.5,264500],[50,89930,109767.5,119025,132250,150765,173247.5,232760,267145],[55,92575,112412.5,125637.5,138862.5,158700,181182.5,238050,271112.5],[60,92575,116380,129605,142830,161345,186472.5,247307.5,292272.5],[65,96542.5,120347.5,134895,148120,170602.5,194407.5,252597.5,293595],[70,97865,124315,138862.5,152087.5,177215,195730,260532.5,296240],[75,101832.5,128282.5,142830,156055,177215,201020,269790,300207.5],[80,104477.5,132250,148120,161345,182505,206310,269790,302852.5],[85,107122.5,134895,152087.5,166635,189117.5,212922.5,273757.5,308142.5],[90,108445,137540,156055,170602.5,191762.5,215567.5,281692.5,312110],[95,109767.5,138862.5,160022.5,171925,201020,230115,297562.5,333270],[100,111090,141507.5,165312.5,173247.5,206310,235405,305497.5,335915],[110,113735,144152.5,171925,179860,210277.5,235405,312110,358397.5],[120,117702.5,150765,178537.5,185150,216890,244662.5,314755,359720],[130,121670,158700,185150,194407.5,222180,253920,327980,383525],[140,124315,163990,190440,206310,235405,261855,335915,386170],[150,132250,170602.5,199697.5,212922.5,243340,272435,353107.5,403362.5],[160,134895,174570,206310,220857.5,249952.5,277725,359720,411297.5],[170,140185,177215,215567.5,228792.5,260532.5,288305,372945,423200],[180,142830,179860,219535,235405,271112.5,292272.5,378235,431135],[190,146797.5,191762.5,226147.5,239372.5,279047.5,302852.5,386170,440392.5],[200,148120,197052.5,234082.5,244662.5,281692.5,309465,396750,450972.5],[220,153410,204987.5,243340,259210,297562.5,326657.5,407330,465520],[240,158700,212922.5,252597.5,272435,309465,335915,424522.5,482712.5],[260,162667.5,219535,263177.5,284337.5,324012.5,350462.5,441715,498582.5],[280,169280,228792.5,272435,294917.5,342527.5,365010,460230,518420],[300,175892.5,234082.5,276402.5,304175,350462.5,379557.5,480067.5,539580],[320,178537.5,240695,286982.5,314755,354430,392782.5,485357.5,550160],[340,183827.5,245985,296240,337237.5,362365,406007.5,499905,560740],[360,189117.5,252597.5,310787.5,337237.5,375590,421877.5,538257.5,600415],[380,193085,253920,312110,346495,387492.5,435102.5,556772.5,616285],[400,199697.5,263177.5,321367.5,353107.5,398072.5,448327.5,588512.5,641412.5],[430,203665,271112.5,334592.5,365010,411297.5,468165,589835,667862.5],[460,207632.5,279047.5,343850,371622.5,436425,482712.5,592480,673152.5],[490,214245,284337.5,351785,387492.5,454940,502550,614962.5,695635],[520,219535,288305,365010,403362.5,466842.5,519742.5,630832.5,714150],[550,224825,297562.5,383525,416587.5,485357.5,536935,659927.5,736632.5],[580,230115,302852.5,392782.5,417910,489325,539580,663895,764405],[610,236727.5,312110,404685,425845,497260,547515,666540,790855],[640,242017.5,318722.5,416587.5,436425,513130,566030,681087.5,817305],[670,248630,326657.5,420555,440392.5,529000,568675,692990,843755],[700,253920,334592.5,423200,453617.5,543547.5,596447.5,720762.5,870205],[750,259210,365010,444360,462875,562062.5,625542.5,756470,915170],[800,269790,375590,449650,470810,585867.5,646702.5,790855,958812.5],[850,277725,386170,468165,480067.5,604382.5,667862.5,819950,1002455],[900,286982.5,398072.5,486680,489325,629510,691667.5,854335,1046097.5]]};
+const PRESET=[["동서울우편집중국","서울논현동우체국",6.9],["동서울물류센터","서울광진우체국",1],["동서울물류센터","동서울물류(소포작업장)",1],["동서울우편집중국","서울광진우체국",1.2],["동서울우편집중국","서울강동우체국",6],["동서울우편집중국","서울중곡동우편취급국",6],["동서울우편집중국","서울송파우체국",6.2],["동서울물류센터","서울송파우체국",7.4],["동서울물류센터","서울송파우체국(소포실)",7.5],["동서울우편집중국","서울강남우체국",7.9],["동서울우편집중국","광진강동",8.2],["동서울물류센터","서울동대문우체국",8.3],["동서울물류센터","서울중랑우체국",9.4],["동서울우편집중국","서울동대문우체국",10.7],["동서울우편집중국","광진동대문",10.9],["동서울우편집중국","광진강남",11],["동서울우편집중국","서울광화문우체국",11.2],["동서울우편집중국","서울서초서초우체국",12.3],["동서울우편집중국","광진하남",12.7],["동서울우편집중국","강남서초",12.9],["동서울우편집중국","광진서초",13.3],["동서울우편집중국","하남우체국",13.7],["동서울우편집중국","서울중앙우체국",13.9],["동서울물류센터","광진서초",15.1],["동서울물류센터","서초동대문",15.1],["동서울우편집중국","서울용산우체국",15.5],["동서울우편집중국","동대문중앙",16],["동서울우편집중국","광진중앙",16.1],["동서울우편집중국","송파서초",16.2],["동서울우편집중국","광진용산",16.7],["동서울우편집중국","서울성북우체국",16.7],["동서울우편집중국","서초광화문",17],["동서울우편집중국","강동동대문",18.8],["동서울우편집중국","중앙용산",18.9],["동서울우편집중국","광진성북",19.2],["동서울우편집중국","강동하남",19.7],["동서울우편집중국","광화문용산",20.1],["동서울물류센터","성남분당",23],["동서울우편집중국","서물복",24.2],["동서울우편집중국","서서울물왕복",24.2],["동서울우편집중국","안양집왕복",24.3],["동서울우편집중국","성남집복",24.8],["동서울우편집중국","성남집왕복",24.8],["동서울물류센터","서서울물왕복",25.2],["동서울물류센터","의정부집왕복",25.2],["동서울물류센터","류안양집왕복",25.3],["동서울물류센터","성남집왕복",25.8],["동서울우편집중국","안양물복",25.8],["동서울우편집중국","서울충무로2가우체국",26],["동서울우편집중국","양평양서",29],["동서울물류센터","안양물복",31.3],["동서울물류센터","안양물왕복",31.3],["동서울우편집중국","하남광화문",32],["동서울우편집중국","부천집왕복",34.8],["동서울우편집중국","하남강남",35.7],["동서울우편집중국","하남양평집배",35.7],["동서울우편집중국","수원집복",38.7],["동서울물류센터","수원집복",39.3],["동서울물류센터","수원집왕복",39.3],["동서울물류센터","부평물왕복",41.1],["동서울우편집중국","양평(로지스양평)",44.7],["동서울물류센터","양주(아주렌탈)",48],["동서울우편집중국","양평양서양평(로지스양평)",50],["동서울우편집중국","양서집배로지스",51],["동서울우편집중국","하남청평",58],["동서울우편집중국","상면",60],["동서울우편집중국","설악청평",60],["동서울우편집중국","청평가평조종우",67],["동서울우편집중국","설악청평가평",78]];
+const PRESET_OLD=["동서울물류센터|광진|1","동서울물류센터|동물(소포작업장)|1","동서울우편집중국|광진|1.2","동서울우편집중국|강동|6","동서울우편집중국|중곡동|6","동서울우편집중국|송파|6.2","동서울물류센터|강동송파|6.5","동서울물류센터|송파(소포실)|7.5","동서울우편집중국|강남|7.9","동서울우편집중국|광진강동|8.2","동서울물류센터|동대문|8.3","동서울물류센터|중랑우체국|9.4","동서울우편집중국|동대문|10.7","동서울우편집중국|광진동대문|10.9","동서울우편집중국|광진강남|11","동서울우편집중국|광화문|11.2","동서울우편집중국|서초|12.3","동서울우편집중국|광진하남|12.7","동서울우편집중국|강남서초|12.9","동서울우편집중국|광진서초|13.3","동서울우편집중국|하남|13.7","동서울우편집중국|중앙|13.9","동서울물류센터|광진서초|15.1","동서울물류센터|서초동대문|15.1","동서울우편집중국|용산|15.5","동서울우편집중국|동대문중앙|16","동서울우편집중국|광진중앙|16.1","동서울우편집중국|송파서초|16.2","동서울우편집중국|광진용산|16.7","동서울우편집중국|성북|16.7","동서울우편집중국|서초광화문|17","동서울우편집중국|태평로(우)|17","동서울우편집중국|강동동대문|18.8","동서울우편집중국|중앙용산|18.9","동서울우편집중국|광진성북|19.2","동서울우편집중국|강동하남|19.7","동서울우편집중국|광화문용산|20.1","동서울물류센터|성남분당|23","동서울우편집중국|서물복|24.2","동서울우편집중국|서서울물왕복|24.2","동서울우편집중국|안양집왕복|24.3","동서울우편집중국|성남집복|24.8","동서울우편집중국|성남집왕복|24.8","동서울물류센터|서서울물왕복|25.2","동서울물류센터|의정부집왕복|25.2","동서울물류센터|류안양집왕복|25.3","동서울물류센터|성남집왕복|25.8","동서울우편집중국|안양물복|25.8","동서울우편집중국|충무로2가우체국|26","동서울우편집중국|양평양서|29","동서울물류센터|안양물복|31.3","동서울물류센터|안양물왕복|31.3","동서울우편집중국|하남광화문|32","동서울우편집중국|부천집왕복|34.8","동서울우편집중국|하남강남|35.7","동서울우편집중국|하남양평집배|35.7","동서울우편집중국|수원집복|38.7","동서울물류센터|수원집복|39.3","동서울물류센터|수원집왕복|39.3","동서울물류센터|부평물왕복|41.1","동서울우편집중국|양평(로지스양평)|44.7","동서울물류센터|양주(아주렌탈)|48","동서울우편집중국|양평양서양평(로지스양평)|50","동서울우편집중국|양서집배로지스|51","동서울우편집중국|하남청평|58","동서울우편집중국|상면|60","동서울우편집중국|설악청평|60","동서울우편집중국|중앙(오파스)|64","동서울우편집중국|청평가평조종우|67","동서울우편집중국|설악청평가평|78"];
+const TYPE_NAME={general:"육상일반",parcel:"낱소포"};
+const $=id=>document.getElementById(id);
+const won=n=>n.toLocaleString("ko-KR")+"원";
+const pad=n=>String(n).padStart(2,"0");
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())};
+const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e};
+const uid6=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+function lookup(type,km,ton){
+  const rows=RATES[type], ci=RATES.tons.indexOf(ton);
+  if(!rows||!(km>=0)||ci<0) return null;
+  for(let i=0;i<rows.length;i++){
+    if(km<rows[i][0]) return {fee:Math.floor(rows[i][ci+1]),lo:i?rows[i-1][0]:0,hi:rows[i][0],ri:i,ci};
+  }
+  return {over:true};
+}
+const bandText=(t,ton,r)=>TYPE_NAME[t]+" · "+ton+"톤 · "+(r.lo?r.lo+"km 이상 ":"")+r.hi+"km 미만";
+
+/* ---------- 상태와 저장소 ---------- */
+let storeDef=false;
+const PRESET_VER=2;
+const pcore=s=>String(s||"").replace(/\s/g,"").replace(/^서울/,"").replace(/우체국|우편취급국/g,"");
+/* 기본 노선을 넣는다. 기본 노선 목록이 바뀌었으면 기본 노선만 새 목록에 맞추고, 직접 등록한 노선은 그대로 둔다. */
+function autoPreset(){
+  if(typeof unlocked==="undefined"||!unlocked||!storeDef||!profile)return;
+  if(routes.size&&(profile.presetVer||0)>=PRESET_VER)return;
+  const now=Date.now(), mk=(p,i)=>routes.set("route_p"+now.toString(36)+i,{kind:"route",from:p[0],to:p[1],km:p[2],ton:5,type:"general",createdAt:now+i});
+  if(routes.size){
+    const left=PRESET.map(p=>p.slice()), oldKeys=new Set(PRESET_OLD);
+    for(const [id,r] of [...routes]){
+      if(!id.startsWith("route_p")&&!oldKeys.has(r.from+"|"+r.to+"|"+r.km))continue;
+      const i=left.findIndex(p=>p[0]===r.from&&pcore(p[1])===pcore(r.to));
+      if(i<0){routes.delete(id);continue}
+      r.to=left[i][1];r.km=left[i][2];left.splice(i,1);
+    }
+    const have=new Set([...routes.values()].map(r=>r.from+"|"+pcore(r.to)));
+    left.forEach((p,i)=>{if(!have.has(p[0]+"|"+pcore(p[1])))mk(p,i)});
+  }else PRESET.forEach(mk);
+  profile.presetVer=PRESET_VER;
+  saveRoutes();saveProfile();
+}
+const legacyRoutes=new Set();
+const routes=new Map(), days=new Map(), legacy=new Map(), carlogs=new Map();
+let reminders=[], settle={}, carinfo=[], profile=null, storeReady=false, regEdit=false;
+let col=null, storeMode="local", q=Promise.resolve(), busy=0, lastSnap=null;
+const LS="freight-v2";
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify({routes:Object.fromEntries(routes),days:Object.fromEntries(days),carlogs:Object.fromEntries(carlogs),reminders,settle,carinfo,profile}))}catch(e){}}
+function lsLoad(){try{const o=JSON.parse(localStorage.getItem(LS)||"{}");for(const k in o.routes||{})routes.set(k,o.routes[k]);for(const k in o.days||{})days.set(k,o.days[k]);for(const k in o.carlogs||{})carlogs.set(k,o.carlogs[k]);if(Array.isArray(o.reminders))reminders=o.reminders;if(o.settle&&typeof o.settle==="object")settle=o.settle;if(Array.isArray(o.carinfo))carinfo=o.carinfo;if(o.profile&&typeof o.profile==="object")profile=o.profile}catch(e){}}
+function applySnap(snap){
+  routes.clear();legacyRoutes.clear();days.clear();legacy.clear();carlogs.clear();reminders=[];settle={};carinfo=[];profile=null;
+  for(const d of snap.docs){
+    const v=d.data();if(!v)continue;
+    if(v.kind==="route"){routes.set(d.id,v);legacyRoutes.add(d.id)}
+    else if(v.kind==="routes"){for(const k in v.items||{})routes.set(k,v.items[k])}
+    else if(v.kind==="day"&&typeof v.date==="string")days.set(v.date,(Array.isArray(v.trips)?v.trips:[]).map(t=>Object.assign({},t)));
+    else if(v.kind==="carlog"&&typeof v.month==="string")carlogs.set(v.month,(Array.isArray(v.items)?v.items:[]).map(x=>Object.assign({},x)));
+    else if(v.kind==="profile")profile={name:String(v.name||""),plate:String(v.plate||""),phone:String(v.phone||""),org:String(v.org||""),pwHash:String(v.pwHash||""),pwSalt:String(v.pwSalt||""),hint:String(v.hint||""),presetVer:Number(v.presetVer)||0};
+    else if(v.kind==="settle")settle=Object.assign({},v.months||{});
+    else if(v.kind==="carinfo")carinfo=(Array.isArray(v.items)?v.items:[]).map(x=>Object.assign({},x));
+    else if(v.kind==="reminders")reminders=(Array.isArray(v.items)?v.items:[]).map(x=>Object.assign({},x));
+    else if(typeof v.date==="string")legacy.set(d.id,v);
+  }
+  if(profile||!snap.metadata||!snap.metadata.fromCache)storeReady=true;
+  if(!snap.metadata||!snap.metadata.fromCache)storeDef=true;
+  autoPreset();
+  renderAll();
+}
+function enqueue(fn){
+  busy++;
+  const p=q.then(fn);
+  q=p.catch(()=>{$("dayMsg").textContent="저장하지 못했습니다. 연결을 확인한 뒤 다시 시도해 주세요."}).then(()=>{busy--;if(!busy&&lastSnap)applySnap(lastSnap)});
+  return p;
+}
+function saveDay(date){
+  renderAll();
+  return enqueue(()=>{
+    const trips=(days.get(date)||[]).map(t=>Object.assign({},t));
+    if(storeMode!=="db"){lsSave();return}
+    const ref=col.doc("D"+date);
+    return trips.length?ref.set({kind:"day",date,trips}):ref.delete();
+  });
+}
+function saveDoc(id,build){
+  renderAll();
+  return enqueue(()=>{if(storeMode!=="db"){lsSave();return}return col.doc(id).set(build())});
+}
+const saveProfile=()=>saveDoc("profile",()=>Object.assign({kind:"profile"},profile));
+const saveSettle=()=>saveDoc("settle",()=>({kind:"settle",months:Object.assign({},settle)}));
+const saveInfo=()=>saveDoc("carinfo",()=>({kind:"carinfo",items:carinfo.map(x=>Object.assign({},x))}));
+function saveRoutes(){
+  const old=[...legacyRoutes];legacyRoutes.clear();
+  const p=saveDoc("routes",()=>({kind:"routes",items:Object.fromEntries(routes)}));
+  for(const id of old)enqueue(()=>storeMode==="db"?col.doc(id).delete():undefined);
+  return p;
+}
+function saveRoute(id,body){
+  if(body)routes.set(id,body);else routes.delete(id);
+  return saveRoutes();
+}
+async function initStore(){
+  let db=null,user=null;
+  try{[db,user]=await Promise.all([claude.use("db"),claude.use("user")])}catch(e){}
+  let uid=null;try{uid=user?await user.id():null}catch(e){}
+  if(!(db&&uid)){useLocal();return}
+  col=db.collection("data/users/"+uid);storeMode="db";
+  $("histMsg").textContent="내역을 불러오는 중…";
+  const timer=setTimeout(()=>{if(!storeReady)$("gtLoad").firstElementChild.textContent="저장된 정보에 아직 연결되지 않았습니다. 인터넷 연결을 확인하고 잠시 기다려 주세요.";$("histMsg").textContent="저장된 내역에 아직 연결되지 않았습니다. 보이는 내용이 최신이 아닐 수 있습니다."},10000);
+  col.onSnapshot(snap=>{
+    lastSnap=snap;
+    if(!snap.metadata.fromCache){clearTimeout(timer);$("histMsg").textContent="노선과 내역은 내 계정에 저장되어 다른 기기에서도 보입니다."}
+    if(!busy)applySnap(snap);
+  },()=>{clearTimeout(timer);$("histMsg").textContent="저장소에 연결하지 못했습니다."});
+}
+function useLocal(){storeMode="local";storeReady=true;storeDef=true;lsLoad();$("histMsg").textContent="노선과 내역은 이 폰에 저장됩니다. 통계 메뉴의 백업으로 다른 폰에 옮길 수 있습니다.";renderAll()}
+
+/* ---------- 운행 ---------- */
+const curDate=()=>$("tDate").value;
+function addTrip(date,trip){const a=days.get(date)||[];a.push(trip);days.set(date,a);return saveDay(date)}
+function tripFromRoute(id,r,km,type,fee){
+  if(!(km>=0))km=r.km;
+  if(!RATES[type])type=r.type;
+  const f=lookup(type,km,r.ton), tf=f&&!f.over?f.fee:null, use=fee>=0?Math.floor(fee):tf;
+  if(use==null)return null;
+  const o={id:uid6(),routeId:id,stops:r.from+" → "+r.to,no:"",km,ton:r.ton,type,fee:use,t:Date.now()};
+  if(use!==tf)o.feeManual=true;
+  return o;
+}
+function prevDay(date){let best=null;for(const [d,a] of days)if(d<date&&a.length&&(!best||d>best))best=d;return best}
+const matchQ=(r,q)=>!q||q.split(/\s+/).every(w=>(r.from+" "+r.to).includes(w));
+let pSel="", pType="general", pFeeManual=false;
+const ORIGIN_FIRST=["동서울우편집중국","동서울물류센터"];
+function origins(){
+  const set=new Set([...routes.values()].map(r=>r.from));
+  return ORIGIN_FIRST.filter(o=>set.has(o)).concat([...set].filter(o=>!ORIGIN_FIRST.includes(o)).sort((a,b)=>a.localeCompare(b,"ko")));
+}
+function fillSelect(sel,opts,keep){
+  sel.innerHTML="";for(const [v,label] of opts)sel.append(new Option(label,v));
+  if(opts.some(o=>o[0]===keep))sel.value=keep;
+}
+function renderPicker(){
+  const og=origins(), pf=$("pFrom"), pt=$("pTo");
+  let from=pf.value;if(!og.includes(from)){try{from=localStorage.getItem("freight-origin")||""}catch(e){}if(!og.includes(from))from=og[0]||""}
+  fillSelect(pf,og.map(o=>[o,o]),from);
+  const dest=[...routes.entries()].filter(([,r])=>r.from===from).sort((a,b)=>(a[1].km-b[1].km)||a[1].to.localeCompare(b[1].to,"ko"));
+  fillSelect(pt,[["","도착지를 선택하세요"]].concat(dest.map(([id,r])=>[id,r.to])),pt.value);
+  const r=routes.get(pt.value), pk=$("pKm");
+  if(pt.value!==pSel){pSel=pt.value;pFeeManual=false;pk.value=r?r.km:"";if(r){pType=r.type;setSeg($("pType"),pType)}}
+  pk.disabled=!r;
+  const km=parseFloat(pk.value), f=r&&km>=0?lookup(pType,km,r.ton):null, ok=f&&!f.over, diff=r&&km>=0&&km!==r.km;
+  const pfe=$("pFee");pfe.disabled=!r;
+  if(!r)pfe.value="";else if(!pFeeManual)pfe.value=ok?f.fee:"";
+  const fee=parseFloat(pfe.value), man=r&&fee>=0&&(!ok||fee!==f.fee);
+  $("pInfo").textContent=!r?"도착지 "+dest.length+"곳":!(km>=0)?"거리를 입력하세요":r.ton+"톤 · "+TYPE_NAME[pType]+" · "+(ok?"단가표 "+won(f.fee):"단가표에 없는 거리입니다")+(man?" · 협의 운송료 "+won(Math.floor(fee))+" 적용":"")+(diff?" · 등록된 거리 "+r.km+"km":"");
+  $("pKmSave").hidden=!(diff&&ok)||man;$("pKmSave").textContent=diff?"이 거리("+km+"km)를 노선에 저장":"";
+  $("pAdd").disabled=!(r&&km>=0&&fee>=0)||!curDate();
+  const fl=$("rFromList"), tl=$("rToList");fl.innerHTML="";tl.innerHTML="";
+  for(const o of og)fl.append(new Option(o));
+  for(const d of [...new Set([...routes.values()].map(r=>r.to))].sort((a,b)=>a.localeCompare(b,"ko")))tl.append(new Option(d));
+}
+function renderToday(){
+  const date=curDate(), trips=days.get(date)||[];
+  const leg=[...legacy.values()].filter(v=>v.date===date);
+  const sum=trips.reduce((s,t)=>s+(Number(t.fee)||0),0)+leg.reduce((s,t)=>s+(Number(t.fee)||0),0);
+  $("dCnt").textContent=(trips.length+leg.length)+"회";$("dSum").textContent=won(sum);
+  $("noRoute").hidden=routes.size>0;$("rtCard").hidden=!routes.size;
+  const box=$("rtList");box.innerHTML="";
+  renderPicker();
+  const groups=new Map();
+  const gkey=x=>x.routeId?x.routeId+"|"+x.km+"|"+x.type+"|"+x.fee:"m|"+x.stops+"|"+x.km+"|"+x.ton+"|"+x.type+"|"+x.fee;
+  for(const x of trips){const k=gkey(x), g=groups.get(k);if(g)g.n++;else groups.set(k,{id:x.routeId,key:k,km:x.km,last:x,n:1})}
+  const sorted=[...groups.values()].sort((a,b)=>(a.km-b.km)||String(a.last.stops).localeCompare(String(b.last.stops),"ko"));
+  if(!sorted.length)box.append(el("div","note","아직 기록한 운행이 없습니다."));
+  for(const g of sorted){
+    const x=g.last, r=routes.get(g.id), name=r?r.from+" → "+r.to:(x.stops||"(구간 미입력)"), changed=r&&r.km!==g.km;
+    const row=el("div","rt"), info=el("div");
+    info.append(el("div","n",name),el("div","m",g.km+"km"+(changed?" (거리 수정)":"")+" · "+x.ton+"톤 · "+(TYPE_NAME[x.type]||"")+" · "+won(Number(x.fee)||0)+(x.feeManual?" (협의)":"")));
+    const st=el("div","step"), minus=el("button",null,"−"), cnt=el("b",null,String(g.n)), plus=el("button","plus","+");
+    minus.setAttribute("aria-label",name+" 운행 1회 빼기");plus.setAttribute("aria-label",name+" 운행 1회 추가");
+    plus.disabled=!date;
+    plus.onclick=()=>{const nt=(r&&!x.feeManual&&tripFromRoute(g.id,r,g.km,x.type))||Object.assign({},x,{id:uid6(),no:"",memo:"",t:Date.now()});$("dayMsg").textContent="";addTrip(date,nt)};
+    minus.onclick=()=>{const a=days.get(date)||[];for(let i=a.length-1;i>=0;i--)if(gkey(a[i])===g.key){a.splice(i,1);break}$("dayMsg").textContent="";saveDay(date)};
+    st.append(minus,cnt,plus);row.append(info,st);box.append(row);
+  }
+  const dr=$("dayRows");dr.innerHTML="";
+  const all=trips.map(x=>Object.assign({date,src:"day"},x)).concat(leg.map(v=>Object.assign({},v,{src:"legacy",id:[...legacy.entries()].find(e=>e[1]===v)[0]})));
+  $("dayMore").hidden=!all.length;
+  for(const v of all)dr.append(tripItem(v));
+  const pd=!trips.length&&routes.size?prevDay(date):null;
+  $("copyBtn").hidden=!pd;
+  if(pd){
+    $("copyBtn").textContent=pd.slice(5).replace("-","/")+" 운행("+days.get(pd).length+"회)과 동일하게 채우기";
+    $("copyBtn").onclick=()=>{
+      const a=[];
+      for(const t of days.get(pd)){
+        const r=t.routeId&&routes.get(t.routeId), nt=r&&!t.feeManual?tripFromRoute(t.routeId,r,t.km,t.type):null;
+        a.push(nt||Object.assign({},t,{id:uid6(),no:"",t:Date.now()}));
+      }
+      days.set(date,a);saveDay(date);
+    };
+  }
+}
+
+/* ---------- 직접 입력 ---------- */
+let tblType="general";
+
+/* ---------- 내역 ---------- */
+function monthTrips(mm){
+  const m=mm||$("hMonth").value, out=[];
+  for(const [d,a] of days)if(d.startsWith(m))a.forEach(t=>out.push(Object.assign({date:d,src:"day"},t)));
+  for(const [id,v] of legacy)if(v.date.startsWith(m))out.push(Object.assign({},v,{src:"legacy",id,t:v.savedAt||0}));
+  return out.sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:(a.t||0)-(b.t||0));
+}
+let armed=null;
+function renderHist(){
+  const rows=monthTrips(), sup=rows.reduce((s,v)=>s+(Number(v.fee)||0),0), vat=Math.floor(sup*0.1);
+  $("sCnt").textContent=rows.length+"회";$("sSup").textContent=won(sup);$("sVat").textContent=won(vat);$("sTot").textContent=won(sup+vat);
+  $("xlsBtn").disabled=!rows.length;
+  const mKey=$("hMonth").value, st=settle[mKey];
+  $("stDone").hidden=!st;$("stForm").hidden=!!st;
+  if(st){
+    const diff=(Number(st.amount)||0)-(sup+vat);
+    $("stText").textContent="입금 완료 · "+st.date+" · "+won(Number(st.amount)||0)+(diff===0?" (계산한 합계와 같습니다)":" · 계산한 합계보다 "+won(Math.abs(diff))+(diff>0?" 많습니다":" 적습니다"));
+    $("stText").className="note"+(diff<0?" lv2":"");
+  }
+  renderCal(rows);
+  const box=$("hList");box.innerHTML="";
+  if(!rows.length){const p=el("div","note","이 달에 저장된 운행이 없습니다.");p.style.marginTop="0";box.append(p);return}
+  let cur=null;
+  for(const v of rows){
+    if(v.date!==cur){
+      cur=v.date;const same=rows.filter(x=>x.date===cur), h=el("div","dayhead");
+      h.append(el("span",null,cur.slice(5).replace("-","/")+" · "+same.length+"회"),el("span",null,won(same.reduce((s,x)=>s+(Number(x.fee)||0),0))));
+      box.append(h);
+    }
+    box.append(tripItem(v));
+  }
+}
+let editKey=null, editMsg="";
+function tripItem(v){
+  const it=el("div","item"), key=v.src+v.date+v.id;
+  it.append(el("div","a",v.stops||"(구간 미입력)"),el("div","f",won(Number(v.fee)||0)),
+    el("div","m",[v.km+"km",v.ton+"톤",TYPE_NAME[v.type]||"",v.feeManual?"협의 운송료":"",v.memo,v.no].filter(Boolean).join(" · ")));
+  const act=el("div");act.style.justifySelf="end";
+  if(v.src==="day"){
+    const ed=el("button","link","수정");ed.onclick=()=>{editKey=editKey===key?null:key;editMsg="";armed=null;renderHist();renderToday()};act.append(ed);
+  }
+  const d=el("button","link bad",armed===key?"정말 삭제":"삭제");
+  d.onclick=()=>{
+    if(armed!==key){armed=key;renderHist();renderToday();return}
+    armed=null;editKey=null;
+    if(v.src==="legacy"){legacy.delete(v.id);renderAll();enqueue(()=>storeMode==="db"?col.doc(v.id).delete():undefined)}
+    else{const a=days.get(v.date)||[], i=a.findIndex(t=>t.id===v.id);if(i>=0)a.splice(i,1);saveDay(v.date)}
+  };
+  act.append(d);it.append(act);
+  if(editKey===key&&v.src==="day"){
+    const f=el("div","edit"), km=el("input"), ton=el("select"), ty=el("select"), ok=el("button","btn","저장"), no=el("button","btn ghost","취소");
+    km.type="number";km.step="0.1";km.min="0";km.inputMode="decimal";km.value=v.km;km.setAttribute("aria-label","거리 km");
+    ton.setAttribute("aria-label","톤수");for(const x of RATES.tons)ton.append(new Option(x+"톤",String(x)));ton.value=String(v.ton);
+    ty.setAttribute("aria-label","운송 종류");ty.append(new Option("육상일반","general"),new Option("낱소포","parcel"));ty.value=v.type;
+    const fee=el("input"), fl=el("div","m wide","운송료 (원) — 협의 운송료면 고쳐 넣으세요");
+    fee.type="number";fee.min="0";fee.inputMode="numeric";fee.value=v.fee;fee.className="wide";fee.setAttribute("aria-label","운송료 원");
+    const tableFee=()=>{const k=parseFloat(km.value), r=k>=0?lookup(ty.value,k,parseFloat(ton.value)):null;return r&&!r.over?r.fee:null};
+    const refill=()=>{const tf=tableFee();if(tf!=null)fee.value=tf};
+    km.oninput=refill;ton.onchange=refill;ty.onchange=refill;
+    ok.onclick=()=>{
+      const k=parseFloat(km.value), tn=parseFloat(ton.value), fv=parseFloat(fee.value), tf=tableFee();
+      if(!(k>=0)||!(fv>=0)){editMsg=!(k>=0)?"거리를 확인해 주세요.":"운송료를 확인해 주세요.";renderHist();renderToday();return}
+      const a=days.get(v.date)||[], x=a.find(t=>t.id===v.id);
+      if(x){x.km=k;x.ton=tn;x.type=ty.value;x.fee=Math.floor(fv);if(x.fee!==tf)x.feeManual=true;else delete x.feeManual}
+      editKey=null;editMsg="";saveDay(v.date);
+    };
+    no.onclick=()=>{editKey=null;editMsg="";renderHist();renderToday()};
+    f.append(km,ton,ty,fl,fee,ok,no);it.append(f);
+    if(editMsg){const w=el("div","m lv1",editMsg);w.style.gridColumn="1/-1";it.append(w)}
+  }
+  return it;
+}
+$("hMonth").onchange=()=>{armed=null;renderHist()};
+function renderCal(rows){
+  const box=$("hCal");box.innerHTML="";if(box.hidden)return;
+  const m=$("hMonth").value;if(!m)return;
+  const [y,mo]=m.split("-").map(Number), first=new Date(y,mo-1,1).getDay(), last=new Date(y,mo,0).getDate(), g=el("div","cal"), by={};
+  for(const v of rows){const o=by[v.date]||(by[v.date]=[0,0]);o[0]++;o[1]+=Number(v.fee)||0}
+  for(const d of ["일","월","화","수","목","금","토"])g.append(el("div","dow",d));
+  for(let i=0;i<first;i++)g.append(el("div"));
+  for(let d=1;d<=last;d++){
+    const ds=m+"-"+pad(d), o=by[ds], b=el("button",o?"has":"");
+    if(ds===today())b.classList.add("today");
+    b.append(el("b",null,String(d)));
+    if(o)b.append(el("span","c",o[0]+"회"),el("span",null,(o[1]/10000).toFixed(1)+"만"));
+    b.setAttribute("aria-label",ds+(o?" 운행 "+o[0]+"회 "+won(o[1]):" 운행 없음"));
+    b.onclick=()=>{$("tDate").value=ds;showTab("calc");renderToday()};
+    g.append(b);
+  }
+  box.append(g,el("div","note","날짜를 누르면 그날 운행 화면으로 이동합니다. 금액은 만 원 단위입니다."));
+}
+$("stSave").onclick=()=>{
+  const a=parseFloat($("stAmt").value);if(!$("stDate").value||!(a>=0))return;
+  settle[$("hMonth").value]={date:$("stDate").value,amount:Math.floor(a)};$("stAmt").value="";saveSettle();
+};
+$("stUndo").onclick=()=>{delete settle[$("hMonth").value];saveSettle()};
+for(const id of ["stDate","stAmt"])$(id).addEventListener("input",()=>{$("stSave").disabled=!($("stDate").value&&parseFloat($("stAmt").value)>=0)});
+
+/* ---------- 엑셀 ---------- */
+async function initDownloads(){
+  let dl=null;try{dl=await claude.use("downloads")}catch(e){}
+  if(!dl)return;
+  $("xlsBtn").hidden=false;$("bkSave").hidden=false;
+  $("bkSave").onclick=async()=>{try{await dl.save({filename:"운송모바일_백업_"+today()+".json",data:JSON.stringify(bkData())});$("bkMsg").textContent="백업 파일을 저장했습니다."}catch(e){if(e&&e.code!=="declined")$("bkMsg").textContent="백업 파일을 저장하지 못했습니다."}};
+  $("xlsBtn").onclick=async()=>{
+    const m=$("hMonth").value, rows=monthTrips().reverse();if(!rows.length)return;
+    const sup=rows.reduce((s,v)=>s+(Number(v.fee)||0),0), vat=Math.floor(sup*0.1);
+    const aoa=[["운송일","구간","운송확인서 번호","거리(km)","톤수","종류","운송료(원)","비고"]];
+    for(const v of rows)aoa.push([v.date,v.stops||"",v.no||"",v.km,v.ton,TYPE_NAME[v.type]||"",Number(v.fee)||0,[v.feeManual?"협의 운송료":"",v.memo||""].filter(Boolean).join(" ")]);
+    aoa.push([],["","","","","","공급가액",sup],["","","","","","부가세(10%)",vat],["","","","","","합계",sup+vat]);
+    const byDay=new Map();for(const v of rows){const o=byDay.get(v.date)||[0,0];o[0]++;o[1]+=Number(v.fee)||0;byDay.set(v.date,o)}
+    const daily=[["운송일","운행 횟수","운송료(원)"]];for(const [d,o] of byDay)daily.push([d,o[0],o[1]]);daily.push(["합계",rows.length,sup]);
+    try{
+      if(window.XLSX){
+        const ws=XLSX.utils.aoa_to_sheet(aoa);ws["!cols"]=[{wch:12},{wch:36},{wch:18},{wch:9},{wch:6},{wch:12},{wch:12}];
+        const ws2=XLSX.utils.aoa_to_sheet(daily);ws2["!cols"]=[{wch:12},{wch:10},{wch:12}];
+        const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"운행 내역");XLSX.utils.book_append_sheet(wb,ws2,"일별 합계");
+        const cl=(carlogs.get(m)||[]).slice().sort((a,b)=>a.date<b.date?-1:1);
+        if(cl.length){const c=[["날짜","구분","내용","금액(원)","주행거리(km)","주유량(L)"]];for(const x of cl)c.push([x.date,CAT_NAME[x.cat]||"",x.memo||"",Number(x.amt)||0,x.odo??"",x.lit??""]);c.push(["합계","","",cl.reduce((s,x)=>s+(Number(x.amt)||0),0)]);const ws3=XLSX.utils.aoa_to_sheet(c);ws3["!cols"]=[{wch:12},{wch:12},{wch:18},{wch:12},{wch:13},{wch:10}];XLSX.utils.book_append_sheet(wb,ws3,"차량 지출")}
+        await dl.save({filename:"운송료_"+m+".xlsx",data:XLSX.write(wb,{type:"array",bookType:"xlsx"})});
+      }else{
+        const csv="﻿"+aoa.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+        await dl.save({filename:"운송료_"+m+".csv",data:csv});
+      }
+    }catch(e){if(e&&e.code!=="declined")$("histMsg").textContent="파일을 내보내지 못했습니다."}
+  };
+}
+
+/* ---------- 운송확인서 목록 캡처 ---------- */
+const IMP_PROMPT='첨부한 이미지는 우체국모바일 앱의 "운송확인서 선택" 화면 캡처입니다(여러 장일 수 있고 서로 겹칠 수 있습니다). 표에 보이는 운송확인서를 모두 읽어 아래 형식의 JSON 배열 하나만 답하세요. 글자는 화면에 적힌 그대로 옮기고 추측하지 마세요. 화면 가장자리에서 잘려 운송확인서 번호나 경유국 두 곳이 모두 보이지 않는 항목은 넣지 마세요. 같은 번호가 여러 장에 나오면 한 번만 넣으세요.\n'
++'[{"no":"운송확인서 번호","date":"YYYY-MM-DD","time":"HH:MM","stops":["경유국 첫째 줄","경유국 둘째 줄"],"name":"운송편명","ton":차량용적 숫자}]\n'
++'예: [{"no":"C0000000000000","date":"2026-01-02","time":"06:50","stops":["○○우편집중국","서울○○우체국"],"name":"○○배분임시1-1","ton":5.0}]';
+let imp=[], impOn=false;
+const shortName=s=>String(s||"").replace(/\s/g,"").replace(/^서울/,"").replace(/우체국$/,"");
+function matchRoute(stops){
+  const og=origins(), st=(stops||[]).map(s=>String(s||"").replace(/\s/g,""));
+  const hub=st.find(s=>og.includes(s))||null, other=st.find(s=>s!==hub)||"";
+  const cands=[...routes.entries()].filter(([,r])=>!hub||r.from===hub).sort((a,b)=>(a[1].km-b[1].km)||a[1].to.localeCompare(b[1].to,"ko"));
+  const sn=shortName(other), hit=hub?cands.find(([,r])=>r.to===other||shortName(r.to)===sn):null;
+  return {hub,cands,id:hit?hit[0]:""};
+}
+const noSaved=(date,no)=>no&&(days.get(date)||[]).some(x=>x.no===no);
+function impFee(e){
+  const r=routes.get(e.routeId), ton=e.tonSel||(RATES.tons.includes(e.ton)?e.ton:r?r.ton:5), type=e.type||(r?r.type:"general");
+  const f=e.km>=0?lookup(type,e.km,ton):null, tf=f&&!f.over?f.fee:null;
+  if(e.feeSel!=null&&e.feeSel>=0)return {fee:Math.floor(e.feeSel),ton,type,manual:Math.floor(e.feeSel)!==tf};
+  return tf!=null?{fee:tf,ton,type,manual:false}:null;
+}
+const impAsk=new Map();
+const pairOf=e=>{const st=e.stops.map(s=>s.replace(/\s/g,"")), from=e.hub||st[0], to=st.find(s=>s!==from)||st[1]||"";return {key:from+"|"+to,from,to}};
+function registerPair(p,k){
+  const first=imp.find(x=>!x.routeId&&pairOf(x).key===p.key), ton=first&&RATES.tons.includes(first.ton)?first.ton:5;
+  const ex=[...routes.entries()].find(([,r])=>r.from===p.from&&r.to===p.to), id=ex?ex[0]:"route_i"+uid6();
+  if(!ex)routes.set(id,{kind:"route",from:p.from,to:p.to,km:k,ton,type:"general",createdAt:Date.now()});
+  for(const x of imp){x.cands=matchRoute(x.stops).cands;if(!x.routeId&&pairOf(x).key===p.key){x.routeId=id;x.km=routes.get(id).km;x.feeSel=null;x.checked=true}}
+  impAsk.delete(p.key);saveRoutes();$("impMsg").textContent=p.from+" → "+p.to+" 노선을 등록했습니다.";
+}
+function renderAsk(box){
+  const seen=new Set();
+  for(const e of imp){
+    if(e.routeId||noSaved(e.date,e.no))continue;
+    const p=pairOf(e);if(!p.to||seen.has(p.key))continue;seen.add(p.key);
+    const a=impAsk.get(p.key)||{km:"",skip:false};impAsk.set(p.key,a);
+    if(a.skip)continue;
+    if(imp.some(x=>!x.routeId&&pairOf(x).key===p.key&&x.feeSel!=null&&x.feeSel>=0)){
+      const w0=el("div","note",p.from+" → "+p.to+": 운송료를 직접 넣은 협의 운행이라 노선에 등록하지 않습니다.");w0.style.margin="0 0 10px";box.append(w0);continue;
+    }
+    const n=imp.filter(x=>!x.routeId&&pairOf(x).key===p.key).length;
+    const w=el("div","warn"), km=el("input"), row=el("div","ctl"), yes=el("button","btn","노선으로 등록"), no=el("button","btn ghost","등록 안 함");
+    w.style.cssText="margin:0 0 10px";
+    w.append(el("div","n","등록되지 않은 노선입니다. 노선으로 등록할까요?"),el("div",null,p.from+" → "+p.to+" (이번 캡처에 "+n+"건)"));
+    km.type="number";km.step="0.1";km.min="0";km.inputMode="decimal";km.placeholder="거리 km (우체국모바일 기준)";km.value=a.km;km.style.marginTop="8px";km.setAttribute("aria-label",p.from+" → "+p.to+" 거리 km");
+    km.oninput=()=>{a.km=km.value;yes.disabled=!(parseFloat(km.value)>=0)};
+    yes.disabled=!(parseFloat(a.km)>=0);yes.style.minHeight="44px";no.style.minHeight="44px";row.style.gridTemplateColumns="1fr 1fr";row.style.marginTop="8px";
+    yes.onclick=()=>{const k=parseFloat(km.value);if(k>=0)registerPair(p,k)};
+    no.onclick=()=>{a.skip=true;renderImp();$("impMsg").textContent="등록하지 않았습니다. 해당 줄에 거리를 직접 넣으면 이번 운행만 계산됩니다."};
+    row.append(yes,no);w.append(km,row);box.append(w);
+  }
+}
+function renderImp(){
+  const box=$("impList");box.innerHTML="";
+  renderAsk(box);
+  let n=0;
+  for(const e of imp){
+    const dup=noSaved(e.date,e.no), f=impFee(e), okRow=!dup&&!!f;
+    const row=el("div","imp"), cb=el("input"), body=el("div");
+    cb.type="checkbox";cb.checked=e.checked&&okRow;cb.disabled=!okRow;cb.setAttribute("aria-label",e.no+" 저장에 포함");
+    cb.onchange=()=>{e.checked=cb.checked;renderImp()};
+    if(cb.checked)n++;
+    body.append(el("div","n",e.date.slice(5).replace("-","/")+" "+e.time+" · "+e.stops.join(" → ")),el("div","m",[e.name,e.no,e.ton?e.ton+"톤":""].filter(Boolean).join(" · ")));
+    if(dup)body.append(el("div","m lv1","이미 저장된 확인서입니다"));
+    else{
+      const ctl=el("div","ctl"), sel=el("select"), km=el("input");
+      sel.setAttribute("aria-label","노선 선택");sel.append(new Option("노선을 선택하세요",""));
+      for(const [id,r] of e.cands)sel.append(new Option((e.hub?"":r.from+" → ")+r.to+" · "+r.km+"km",id));
+      sel.value=e.routeId;
+      sel.onchange=()=>{e.routeId=sel.value;const r=routes.get(e.routeId);e.km=r?r.km:NaN;e.feeSel=null;e.checked=!!r;renderImp()};
+      const rr=routes.get(e.routeId), c2=el("div","ctl"), ty=el("select");
+      ty.setAttribute("aria-label","운송 종류");ty.append(new Option("육상일반","general"),new Option("낱소포","parcel"));ty.value=e.type||(rr?rr.type:"general");
+      ty.onchange=()=>{e.type=ty.value;e.feeSel=null;renderImp()};c2.append(ty);
+      const tn=el("select");tn.setAttribute("aria-label","톤수");for(const x of RATES.tons)tn.append(new Option(x+"톤",String(x)));
+      tn.value=String(e.tonSel||(RATES.tons.includes(e.ton)?e.ton:rr?rr.ton:5));
+      tn.onchange=()=>{e.tonSel=parseFloat(tn.value);e.feeSel=null;renderImp()};c2.append(tn);
+      km.type="number";km.step="0.1";km.min="0";km.inputMode="decimal";km.value=e.km>=0?e.km:"";km.placeholder="거리 km";km.setAttribute("aria-label","거리 km");
+      km.onchange=()=>{e.km=parseFloat(km.value);e.feeSel=null;if(!e.routeId)e.checked=e.km>=0;renderImp()};
+      ctl.append(sel,km);body.append(ctl);
+      body.append(c2);
+      const c4=el("div","ctl"), fl=el("div","m","운송료 (원)"), fi=el("input");
+      fl.style.alignSelf="center";fi.type="number";fi.min="0";fi.inputMode="numeric";fi.value=f?f.fee:"";fi.setAttribute("aria-label","운송료 원");
+      fi.onchange=()=>{const v=parseFloat(fi.value);e.feeSel=v>=0?v:null;if(v>=0)e.checked=true;renderImp()};
+      c4.append(fl,fi);body.append(c4);
+      if(!e.routeId&&!(e.feeSel!=null&&e.feeSel>=0)){
+        const p=pairOf(e), rb=el("button","btn ghost","노선 등록");
+        rb.style.cssText="min-height:44px;margin-top:8px;font-size:16px";rb.setAttribute("aria-label",p.from+" → "+p.to+" 노선 등록");
+        rb.onclick=()=>{
+          if(!p.to)return;
+          if(!(e.km>=0)){$("impMsg").textContent="노선으로 등록하려면 이 줄의 거리(km)를 먼저 넣어 주세요.";km.focus();return}
+          registerPair(p,e.km);
+        };
+        body.append(rb);
+      }
+      body.append(el("div","m"+(f?"":" lv1"),f?(e.km>=0?e.km+"km · ":"")+f.ton+"톤 · "+TYPE_NAME[f.type]+" · "+won(f.fee)+(f.manual?" (협의 운송료)":""):e.routeId?"거리를 확인하세요":"등록된 노선이 없습니다. 거리를 넣고 \"노선 등록\"을 누르면 노선에 추가됩니다. 등록하지 않으려면 거리나 운송료만 넣으세요."));
+    }
+    const rm=el("button","link bad","이 확인서 삭제");rm.style.paddingLeft="0";rm.setAttribute("aria-label",e.no+" 목록에서 삭제");
+    rm.onclick=()=>{imp=imp.filter(x=>x!==e);renderImp();if(!imp.length)$("impMsg").textContent="불러온 목록을 모두 지웠습니다."};
+    body.append(rm);
+    row.append(cb,body);box.append(row);
+  }
+  $("impSave").hidden=!imp.length;$("impCancel").hidden=!imp.length;
+  $("impSave").disabled=!n;$("impSave").textContent="선택한 "+n+"건 저장";
+}
+$("impCancel").onclick=()=>{imp=[];impAsk.clear();renderImp();$("impMsg").textContent="불러온 목록을 지웠습니다."};
+$("impSave").onclick=()=>{
+  const dates=new Set();let n=0,sum=0;
+  for(const e of imp){
+    const f=impFee(e);if(!e.checked||!f||noSaved(e.date,e.no))continue;
+    const a=days.get(e.date)||[];
+    const tr={id:uid6(),routeId:e.routeId,stops:e.stops.join(" → "),no:e.no,km:e.km>=0?e.km:0,ton:f.ton,type:f.type,fee:f.fee,memo:[e.time,e.name].filter(Boolean).join(" "),t:Date.now()+n};if(f.manual)tr.feeManual=true;a.push(tr);
+    days.set(e.date,a);dates.add(e.date);n++;sum+=f.fee;
+  }
+  if(!n)return;
+  const first=[...dates].sort()[0];imp=[];$("tDate").value=first;
+  for(const d of dates)saveDay(d);
+  renderImp();$("impMsg").textContent=n+"건을 저장했습니다: "+won(sum)+" (부가세 별도)";
+};
+async function initImport(){
+  let sample=null;try{sample=await claude.use("sample")}catch(e){}
+  if(!sample)return;
+  const caps=await sample.limits().catch(()=>null);
+  if(!caps||!caps.images)return;
+  const maxN=caps.images.maxCount||1;
+  $("impCard").hidden=false;impOn=true;$("pNum").hidden=false;renderHome();
+  $("impBtn").onclick=()=>$("impFile").click();
+  $("impFile").onchange=async()=>{
+    let files=[...$("impFile").files];$("impFile").value="";if(!files.length)return;
+    const over=files.length>maxN;if(over)files=files.slice(0,maxN);
+    $("impBtn").disabled=true;$("impMsg").textContent="캡처 "+files.length+"장을 읽는 중입니다…";
+    try{
+      const d=await sample.json(IMP_PROMPT,{images:files});
+      const seen=new Set(imp.map(e=>e.no)), add=[];
+      for(const x of Array.isArray(d)?d:[]){
+        if(!x||typeof x.no!=="string"||!Array.isArray(x.stops)||x.stops.length<2||!/^\d{4}-\d{2}-\d{2}$/.test(x.date||""))continue;
+        const no=x.no.trim();if(seen.has(no))continue;seen.add(no);
+        const stops=x.stops.map(s=>String(s).trim()).filter(Boolean), m=matchRoute(stops), r=routes.get(m.id);
+        add.push({no,date:x.date,time:typeof x.time==="string"?x.time:"",stops,name:typeof x.name==="string"?x.name.trim():"",ton:Number(x.ton)||0,hub:m.hub,cands:m.cands,routeId:m.id,km:r?r.km:NaN,checked:!!r});
+      }
+      imp=imp.concat(add).sort((a,b)=>(a.date+a.time<b.date+b.time?-1:1));
+      renderImp();
+      const miss=imp.filter(e=>!e.routeId&&!noSaved(e.date,e.no)).length;
+      $("impMsg").textContent=add.length?"운송확인서 "+add.length+"건을 읽었습니다. 노선과 거리를 확인한 뒤 저장하세요."+(miss?" 등록되지 않은 노선이 있어 "+miss+"건을 찾지 못했습니다. 아래 질문에서 등록 여부를 정해 주세요.":"")+(over?" 한 번에 "+maxN+"장까지만 읽을 수 있어 나머지는 다시 골라 주세요.":""):"캡처에서 운송확인서를 찾지 못했습니다. \"운송확인서 선택\" 화면인지 확인해 주세요.";
+    }catch(e){
+      const c=e&&e.code;
+      if(["not_granted","sampling_disabled","images_unavailable","not_declared","capability_disabled"].includes(c))$("impCard").hidden=true;
+      else $("impMsg").textContent=c==="rate_limited"?"요청이 많습니다. 잠시 뒤 다시 시도해 주세요.":c==="image_rejected"?"읽을 수 없는 이미지가 있습니다. 다른 캡처를 골라 주세요.":"캡처를 읽지 못했습니다. 다시 시도해 주세요.";
+    }finally{$("impBtn").disabled=false}
+  };
+}
+
+/* ---------- 노선 ---------- */
+let rType="general", editId=null, rArmed=null;
+function routeForm(){
+  const km=parseFloat($("rKm").value), ton=parseFloat($("rTon").value), f=isFinite(km)?lookup(rType,km,ton):null;
+  const ok=f&&!f.over&&$("rFrom").value.trim()&&$("rTo").value.trim();
+  $("rPrev").textContent=f&&!f.over?bandText(rType,ton,f)+" → 1회 "+won(f.fee)+" (부가세 별도)":f&&f.over?"900km 이상은 단가표에 없습니다.":"거리는 우체국모바일 운송확인서에 표시된 km를 그대로 넣으세요.";
+  $("rSave").disabled=!ok;
+  return ok?{kind:"route",from:$("rFrom").value.trim(),to:$("rTo").value.trim(),km,ton,type:rType}:null;
+}
+function setSeg(box,v){box.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.v===v))}
+function resetRouteForm(){
+  editId=null;$("rFrom").value="";$("rTo").value="";$("rKm").value="";
+  $("rfTitle").textContent="노선 추가";$("rSave").textContent="노선 추가";$("rCancel").hidden=true;routeForm();
+}
+$("rSave").onclick=()=>{
+  const b=routeForm();if(!b)return;
+  const id=editId||("route_"+uid6());
+  b.createdAt=editId&&routes.get(editId)?routes.get(editId).createdAt||Date.now():Date.now();
+  saveRoute(id,b);resetRouteForm();
+};
+$("rCancel").onclick=resetRouteForm;
+function renderRoutes(){
+  const box=$("rList");box.innerHTML="";
+  renderPreset();
+  if(!routes.size){const p=el("div","note","등록된 노선이 없습니다.");p.style.marginTop="0";box.append(p);return}
+  const sorted=[...routes.entries()].filter(([,r])=>matchQ(r,$("rQ").value.trim())).sort((a,b)=>(a[1].km-b[1].km)||((a[1].createdAt||0)-(b[1].createdAt||0)));
+  box.append(el("div","note","등록한 노선 "+routes.size+"개"+(sorted.length!==routes.size?" 중 "+sorted.length+"개":"")));
+  for(const [id,r] of sorted){
+    const f=lookup(r.type,r.km,r.ton), row=el("div","rt"), info=el("div"), act=el("div");
+    info.append(el("div","n",r.from+" → "+r.to),el("div","m",r.km+"km · "+r.ton+"톤 · "+TYPE_NAME[r.type]+" · "+(f&&!f.over?won(f.fee):"단가 없음")));
+    const ed=el("button","link","수정"), del=el("button","link bad",rArmed===id?"정말 삭제":"삭제");
+    ed.onclick=()=>{
+      editId=id;$("rFrom").value=r.from;$("rTo").value=r.to;$("rKm").value=r.km;$("rTon").value=String(r.ton);rType=r.type;setSeg($("rType"),rType);
+      $("rfTitle").textContent="노선 수정";$("rSave").textContent="수정 저장";$("rCancel").hidden=false;routeForm();$("rFrom").scrollIntoView({block:"center"});
+    };
+    del.onclick=()=>{if(rArmed!==id){rArmed=id;renderRoutes();return}rArmed=null;if(editId===id)resetRouteForm();saveRoute(id,null)};
+    act.append(ed,del);row.append(info,act);box.append(row);
+  }
+}
+
+/* ---------- 차량 관리 ---------- */
+const CAT_NAME={fuel:"주유",fix:"정비·소모품",ins:"보험료",etc:"기타"};
+let renewId=null, litManual=false;
+let cCat="fuel", mKind="insp", mInspType="정기검사", cArmed=null, mArmed=null;
+const num=id=>{const v=parseFloat($(id).value);return isFinite(v)&&v>=0?v:null};
+const allLogs=()=>{const o=[];for(const a of carlogs.values())for(const x of a)o.push(x);return o};
+const curOdo=()=>allLogs().reduce((m,x)=>x.odo!=null&&x.odo>m?x.odo:m,0)||null;
+function saveCar(month){
+  renderAll();
+  return enqueue(()=>{
+    const items=(carlogs.get(month)||[]).map(x=>Object.assign({},x));
+    if(storeMode!=="db"){lsSave();return}
+    const ref=col.doc("C"+month);
+    return items.length?ref.set({kind:"carlog",month,items}):ref.delete();
+  });
+}
+function saveRem(){
+  renderAll();
+  return enqueue(()=>{
+    if(storeMode!=="db"){lsSave();return}
+    return col.doc("reminders").set({kind:"reminders",items:reminders.map(x=>Object.assign({},x))});
+  });
+}
+function addMonths(ds,n){const [y,m,d]=ds.split("-").map(Number), t=new Date(y,m-1+n,1), last=new Date(t.getFullYear(),t.getMonth()+1,0).getDate();return t.getFullYear()+"-"+pad(t.getMonth()+1)+"-"+pad(Math.min(d,last))}
+const addDays=(ds,n)=>{const [y,m,d]=ds.split("-").map(Number), t=new Date(y,m-1,d+n);return t.getFullYear()+"-"+pad(t.getMonth()+1)+"-"+pad(t.getDate())};
+const dayDiff=ds=>{const [y,m,d]=ds.split("-").map(Number), n=new Date();return Math.round((new Date(y,m-1,d)-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/86400000)};
+function remStatus(r){
+  const parts=[];let lv=0;
+  const dayPart=(due)=>{const dd=dayDiff(due);if(dd<0){lv=2;parts.push((-dd)+"일 지남 ("+due+")")}else{if(dd<=30)lv=Math.max(lv,1);parts.push(dd+"일 남음 ("+due+")")}};
+  if(r.kind==="insp"){
+    if(!r.due)return {text:"만료일 없음",lv:0};
+    const s=addDays(r.due,-90), e=addDays(r.due,31), toS=dayDiff(s), toD=dayDiff(r.due), toE=dayDiff(e);
+    if(toS>0)parts.push("검사 기간 시작까지 "+toS+"일");
+    else if(toD>=0){lv=1;parts.push("검사 기간입니다 · 만료일까지 "+toD+"일")}
+    else if(toE>=0){lv=2;parts.push("만료일이 지났습니다 · 과태료 없이 받을 수 있는 날 "+toE+"일 남음")}
+    else{lv=2;parts.push("검사 기간을 "+(-toE)+"일 넘겼습니다 · 과태료 대상")}
+    parts.push("기간 "+s+" ~ "+e);
+  }
+  else if(r.kind==="ins"){
+    const dd=dayDiff(r.due);
+    if(dd<0){lv=2;parts.push("만기가 "+(-dd)+"일 지났습니다")}else{if(dd<=30)lv=1;parts.push("만기까지 "+dd+"일")}
+  }
+  else if(r.kind==="date"){if(r.due)dayPart(r.due)}
+  else{
+    const odo=curOdo();
+    if(r.everyKm&&r.lastKm!=null){
+      if(odo==null)parts.push((r.lastKm+r.everyKm).toLocaleString("ko-KR")+"km에 교체");
+      else{const left=r.lastKm+r.everyKm-odo;if(left<0){lv=2;parts.push((-left).toLocaleString("ko-KR")+"km 초과")}else{if(left<=1000)lv=Math.max(lv,1);parts.push(left.toLocaleString("ko-KR")+"km 남음")}}
+    }
+    if(r.everyMon&&r.lastDate)dayPart(addMonths(r.lastDate,r.everyMon));
+  }
+  return {text:parts.join(" · ")||"기준 정보 없음",lv};
+}
+function fuelEconomy(month){
+  const f=allLogs().filter(x=>x.cat==="fuel"&&x.odo!=null&&x.lit>0).sort((a,b)=>a.odo-b.odo);
+  let dist=0,lit=0;
+  for(let i=1;i<f.length;i++)if(f[i].date.startsWith(month)&&f[i].odo>f[i-1].odo){dist+=f[i].odo-f[i-1].odo;lit+=f[i].lit}
+  return lit?{dist,kml:dist/lit}:null;
+}
+function carForm(){
+  $("cFuelRow").hidden=cCat!=="fuel";
+  const pr=num("cPrice"), am=num("cAmt");if(cCat==="fuel"&&!litManual&&pr>0&&am>0)$("cLit").value=(am/pr).toFixed(2);
+  $("cSave").disabled=!($("cDate").value&&num("cAmt")!=null);
+}
+$("cSave").onclick=()=>{
+  const date=$("cDate").value, amt=num("cAmt");if(!date||amt==null)return;
+  const it={id:uid6(),date,cat:cCat,amt:Math.floor(amt),memo:$("cMemo").value.trim()};
+  const odo=num("cOdo"), lit=num("cLit");
+  if(odo!=null)it.odo=odo;if(cCat==="fuel"&&lit!=null)it.lit=lit;
+  if(cCat==="fuel"&&num("cPrice")>0)it.price=num("cPrice");litManual=false;$("cPrice").value="";
+  const m=date.slice(0,7), a=carlogs.get(m)||[];a.push(it);carlogs.set(m,a);
+  $("cAmt").value="";$("cOdo").value="";$("cLit").value="";$("cMemo").value="";$("cMonth").value=m;
+  $("cMsg").textContent="저장했습니다: "+CAT_NAME[it.cat]+" "+won(it.amt);
+  carForm();saveCar(m);
+};
+const KIND_DESC={insp:"정기검사·종합검사의 유효기간 만료일을 등록합니다.",ins:"자동차보험·적재물보험 등의 보험기간과 보험료를 등록합니다.",cycle:"엔진오일·타이어처럼 일정 거리나 기간마다 교체하는 항목을 등록합니다.",date:"검사·보험이 아닌 그 밖의 기한을 등록합니다. 예: 면허 갱신, 교육, 세금 납부, 계약 만료."};
+function remForm(){
+  $("mKindDesc").textContent=KIND_DESC[mKind];
+  $("mCycle").hidden=mKind!=="cycle";$("mDateBox").hidden=mKind!=="date";$("mInsp").hidden=mKind!=="insp";$("mInsBox").hidden=mKind!=="ins";$("mNameBox").hidden=mKind==="insp"||mKind==="ins";
+  const name=$("mName").value.trim();
+  const insOk=$("iName").value.trim()&&$("iDue").value&&(!$("iStart").value||$("iStart").value<$("iDue").value);
+  $("mSave").textContent=renewId&&mKind==="ins"?"갱신 저장":"알림 추가";
+  const ok=mKind==="ins"?!!insOk:mKind==="insp"?!!$("mInspDue").value:name&&(mKind==="date"?!!$("mDue").value:((num("mKm")>0&&num("mLastKm")!=null)||(num("mMon")>0&&!!$("mLastDate").value)));
+  $("mSave").disabled=!ok;
+}
+$("mSave").onclick=()=>{
+  const r={id:uid6(),name:$("mName").value.trim(),kind:mKind};
+  if(mKind==="ins"){
+    r.name=$("iName").value.trim();r.company=$("iCo").value.trim();r.due=$("iDue").value;
+    if($("iStart").value)r.start=$("iStart").value;
+    const amt=num("iAmt");if(amt!=null)r.premium=Math.floor(amt);
+    if(renewId)reminders=reminders.filter(x=>x.id!==renewId);
+    const pay=$("iPay").value||r.start||today();
+    if($("iLog").checked&&amt>0){
+      const m=pay.slice(0,7), a=carlogs.get(m)||[];
+      a.push({id:uid6(),date:pay,cat:"ins",amt:Math.floor(amt),memo:r.name+(r.company?" ("+r.company+")":"")});carlogs.set(m,a);saveCar(m);
+    }
+    renewId=null;
+  }
+  else if(mKind==="insp"){r.name="자동차 "+mInspType;r.due=$("mInspDue").value;r.cycleMon=Number($("mInspCyc").value)||6}
+  else if(mKind==="date")r.due=$("mDue").value;
+  else{
+    if(num("mKm")>0){r.everyKm=num("mKm");if(num("mLastKm")!=null)r.lastKm=num("mLastKm")}
+    if(num("mMon")>0){r.everyMon=Math.round(num("mMon"));if($("mLastDate").value)r.lastDate=$("mLastDate").value}
+  }
+  reminders.push(r);$("iNote").textContent="만기 30일 전부터 운행 화면에 알림이 뜹니다.";
+  for(const id of ["mName","mKm","mMon","mLastKm","mLastDate","mDue","mInspDue","iName","iCo","iStart","iDue","iAmt","iPay"])$(id).value="";
+  $("remForm").open=false;remForm();saveRem();
+};
+function remRows(rb,list,empty){
+  rb.innerHTML="";
+  if(!list.length)rb.append(el("div","note",empty));
+  for(const r of list){
+    const stt=remStatus(r);
+    const row=el("div","rt rem"), info=el("div"), act=el("div");
+    info.append(el("div","n",r.name),el("div","m"+(stt.lv?" lv"+stt.lv:""),stt.text));
+    if(r.kind==="ins"){
+      info.firstChild.textContent=r.name+(r.company?" · "+r.company:"");
+      info.append(el("div","m","보험기간 "+(r.start?r.start+" ~ ":"~ ")+r.due+(r.premium!=null?" · 보험료 "+won(r.premium):"")));
+      const rn=el("button","link","갱신");
+      rn.onclick=()=>{
+        renewId=r.id;mKind="ins";setSeg($("mKind"),"ins");
+        $("iName").value=r.name;$("iCo").value=r.company||"";$("iStart").value=r.due;$("iDue").value=addMonths(r.due,12);$("iAmt").value="";$("iPay").value=r.due;
+        $("iNote").textContent="갱신할 보험의 새 기간과 보험료를 확인한 뒤 저장하면 기존 알림을 대신합니다.";
+        $("remForm").open=true;remForm();$("iAmt").scrollIntoView({block:"center"});
+      };
+      act.append(rn);
+    }else if(r.kind==="insp"){
+      info.append(el("div","m","만료일 "+r.due+" · 주기 "+(r.cycleMon>=12?(r.cycleMon/12)+"년":r.cycleMon+"개월")));
+      const di=el("input");di.type="date";di.value=r.due||"";di.setAttribute("aria-label",r.name+" 만료일 변경");
+      di.onchange=()=>{if(di.value){r.due=di.value;saveRem()}};info.append(di);
+      const done=el("button","link","검사 완료");
+      done.onclick=()=>{r.due=addMonths(r.due,r.cycleMon||6);saveRem()};
+      act.append(done);
+    }else if(r.kind==="date"){
+      const di=el("input");di.type="date";di.value=r.due||"";di.setAttribute("aria-label",r.name+" 만기일 변경");
+      di.onchange=()=>{if(di.value){r.due=di.value;saveRem()}};info.append(di);
+    }else{
+      info.append(el("div","m","주기 "+[r.everyKm?r.everyKm.toLocaleString("ko-KR")+"km":"",r.everyMon?r.everyMon+"개월":""].filter(Boolean).join(" / ")));
+      const done=el("button","link","교체 완료");
+      done.onclick=()=>{const o=curOdo();if(r.everyKm&&o!=null)r.lastKm=o;if(r.everyMon)r.lastDate=today();saveRem()};
+      act.append(done);
+    }
+    const del=el("button","link bad",mArmed===r.id?"정말 삭제":"삭제");
+    del.onclick=()=>{if(mArmed!==r.id){mArmed=r.id;renderCar();renderIns();return}mArmed=null;reminders=reminders.filter(x=>x.id!==r.id);saveRem()};
+    act.append(del);row.append(info,act);rb.append(row);
+  }
+}
+function renderIns(){
+  remRows($("inspList"),reminders.filter(r=>r.kind==="insp"),"등록된 검사가 없습니다. 아래에서 정기검사나 종합검사의 만료일을 등록하세요.");
+  remRows($("insList"),reminders.filter(r=>r.kind==="ins"),"등록된 보험이 없습니다. 아래에서 자동차보험이나 적재물보험을 등록하세요.");
+}
+let remCtx="";
+function placeRemForm(ctx){
+  if(ctx===remCtx)return;remCtx=ctx;
+  $(ctx==="ins"?"remHostIns":"remHostCar").append($("remForm"));
+  const allow=ctx==="ins"?["insp","ins"]:["cycle","date"];
+  $("mKind").querySelectorAll("button").forEach(b=>b.hidden=!allow.includes(b.dataset.v));
+  if(!allow.includes(mKind)){mKind=allow[0];setSeg($("mKind"),mKind)}
+  $("remSum").textContent=ctx==="ins"?"검사·보험 추가":"알림 추가";
+  $("remForm").open=ctx==="ins"&&!reminders.some(r=>r.kind==="insp"||r.kind==="ins");
+  remForm();
+}
+function renderCar(){
+  const m=$("cMonth").value, items=(carlogs.get(m)||[]).slice().sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0);
+  const s={fuel:0,fix:0,ins:0,etc:0};for(const x of items)s[x.cat]=(s[x.cat]||0)+(Number(x.amt)||0);
+  const tot=s.fuel+s.fix+s.ins+s.etc, inc=monthTrips(m).reduce((a,v)=>a+(Number(v.fee)||0),0);
+  $("cFuel").textContent=won(s.fuel);$("cFix").textContent=won(s.fix);$("cEtc").textContent=won(s.etc);$("cIns").textContent=won(s.ins);$("cTot").textContent=won(tot);
+  $("cInc").textContent=won(inc);$("cNet").textContent=won(inc-tot);
+  const odo=curOdo(), fe=fuelEconomy(m), st=[];
+  if(odo!=null)st.push("최근 계기판 "+odo.toLocaleString("ko-KR")+"km");
+  if(fe)st.push("이 달 연비 "+fe.kml.toFixed(2)+"km/L ("+fe.dist.toLocaleString("ko-KR")+"km 기준, 가득 주유 가정)");
+  $("cStat").textContent=st.join(" · ");
+  /* 알림 */
+  remRows($("remList"),reminders.filter(r=>r.kind!=="insp"&&r.kind!=="ins"),"등록된 알림이 없습니다. 위 교체주기 안내에서 \"알림 추가\"를 누르거나 아래에서 직접 추가하세요.");
+  showDue($("remAlert"));
+  /* 기록 */
+  const box=$("cList");box.innerHTML="";
+  const seg_={}, ff=allLogs().filter(x=>x.cat==="fuel"&&x.odo!=null&&x.lit>0).sort((a,b)=>a.odo-b.odo);
+  for(let i=1;i<ff.length;i++)if(ff[i].odo>ff[i-1].odo)seg_[ff[i].id]={dist:ff[i].odo-ff[i-1].odo,kml:(ff[i].odo-ff[i-1].odo)/ff[i].lit};
+  if(!items.length){const p=el("div","note","이 달에 저장된 차량 지출이 없습니다.");p.style.marginTop="0";box.append(p);return}
+  for(const x of items){
+    const it=el("div","item");
+    it.append(el("div","a",x.date.slice(5).replace("-","/")+" · "+CAT_NAME[x.cat]+(x.memo?" · "+x.memo:"")),el("div","f",won(Number(x.amt)||0)),
+      el("div","m",[x.odo!=null?x.odo.toLocaleString("ko-KR")+"km":"",x.lit!=null?x.lit+"L":"",x.price?x.price.toLocaleString("ko-KR")+"원/L":"",seg_[x.id]?"지난 주유 후 "+seg_[x.id].dist.toLocaleString("ko-KR")+"km · "+seg_[x.id].kml.toFixed(2)+"km/L":""].filter(Boolean).join(" · ")));
+    const d=el("button","del",cArmed===x.id?"정말 삭제":"삭제");
+    d.onclick=()=>{if(cArmed!==x.id){cArmed=x.id;renderCar();return}cArmed=null;const a=carlogs.get(m)||[], i=a.findIndex(y=>y.id===x.id);if(i>=0)a.splice(i,1);saveCar(m)};
+    it.append(d);box.append(it);
+  }
+}
+
+/* ---------- 차량 정보 ---------- */
+let nArmed=null;
+const CATS=[["ins","보험사","보험사 이름","전화번호"],["tow","렉카(견인)","업체 이름","전화번호"],["tire","펑크 수리","업체 이름","전화번호"],["shop","카센터","업체 이름","전화번호"],["body","공업사","업체 이름","전화번호"],["etc","기타 연락처","이름","전화번호"],["car","차량 정보","항목 (예: 차대번호, 타이어 규격)","내용"]];
+const DIRECTORY=[["삼성화재","1588-5114"],["현대해상","1588-5656"],["DB손해보험","1588-0100"],["KB손해보험","1544-0114"],["메리츠화재","1566-7711"],["한화손해보험","1566-8000"],["롯데손해보험","1588-3344"],["흥국화재","1688-1688"],["AXA손해보험","1566-1566"],["하나손해보험","1566-3000"],["화물공제조합 고객센터","1577-8305"],["고속도로 긴급견인 (한국도로공사)","1588-2504"]];
+const isPhone=v=>/^[0-9+][0-9\-\s()]{5,}$/.test(v);
+function telEl(v){
+  const w=el("div","telrow"), n=el("span","tel",v), b=el("button","copy","번호 복사"), c=el("a","copy call","전화 걸기");
+  c.href="tel:"+v.replace(/[^0-9+]/g,"");c.target="_blank";c.rel="noopener";c.setAttribute("aria-label",v+" 전화 걸기");
+  
+  b.setAttribute("aria-label",v+" 번호 복사");
+  b.onclick=async()=>{
+    let ok=false;
+    try{await navigator.clipboard.writeText(v.replace(/[^0-9+]/g,""));ok=true}catch(e){
+      try{const r=document.createRange();r.selectNodeContents(n);const s=getSelection();s.removeAllRanges();s.addRange(r);ok=document.execCommand("copy")}catch(e2){}
+    }
+    b.textContent=ok?"복사됨":"길게 눌러 복사";
+    $("telMsg").hidden=false;$("telMsg").textContent=ok?v+" 번호를 복사했습니다. 전화 앱을 열어 붙여넣으세요.":"자동 복사가 되지 않았습니다. 번호를 길게 눌러 복사하거나 직접 눌러 주세요: "+v;
+    setTimeout(()=>{b.textContent="번호 복사"},2500);
+  };
+  const br=el("div","telbtns");br.append(c,b);w.append(n,br);return w;
+}
+function renderInfo(){
+  const ib=$("infoList");ib.innerHTML="";
+  if(!carinfo.length)ib.append(el("div","note","등록된 연락처가 없습니다. 아래에서 보험사, 렉카, 펑크 수리, 카센터, 공업사 연락처를 추가하세요."));
+  for(const [k,title] of CATS){
+    const list=carinfo.filter(n=>(n.cat||(isPhone(n.value)?"etc":"car"))===k);if(!list.length)continue;
+    ib.append(el("div","cat",title));
+    for(const n of list){
+      const row=el("div","rt"), info=el("div"), del=el("button","link bad",nArmed===n.id?"정말 삭제":"삭제");
+      info.append(el("div","m",n.label));
+      if(isPhone(n.value))info.append(telEl(n.value));else info.append(el("div","n",n.value));
+      del.onclick=()=>{if(nArmed!==n.id){nArmed=n.id;renderInfo();return}nArmed=null;carinfo=carinfo.filter(x=>x.id!==n.id);saveInfo()};
+      row.append(info,del);ib.append(row);
+    }
+  }
+  const db=$("dirList");db.innerHTML="";
+  for(const [name,num] of DIRECTORY){
+    const row=el("div","rt"), info=el("div"), have=carinfo.some(n=>n.label===name&&n.value===num), b=el("button","link",have?"추가됨":"내 목록에 추가");b.style.whiteSpace="nowrap";
+    info.append(el("div","m",name),telEl(num));b.disabled=have;
+    b.onclick=()=>{carinfo.push({id:uid6(),cat:"ins",label:name,value:num});saveInfo()};
+    row.append(info,b);db.append(row);
+  }
+}
+for(const [k,title] of CATS)$("nCat").append(new Option(title,k));
+function infoOk(){
+  const c=CATS.find(x=>x[0]===$("nCat").value)||CATS[0];
+  $("nLabelLab").textContent=c[2];$("nValueLab").textContent=c[3];
+  $("nValue").type=c[0]==="car"?"text":"tel";$("nValue").inputMode=c[0]==="car"?"text":"tel";
+  $("nSave").disabled=!($("nLabel").value.trim()&&$("nValue").value.trim());
+}
+$("nCat").onchange=infoOk;
+$("nSave").onclick=()=>{carinfo.push({id:uid6(),cat:$("nCat").value,label:$("nLabel").value.trim(),value:$("nValue").value.trim()});$("nLabel").value="";$("nValue").value="";$("infoForm").open=false;infoOk();saveInfo()};
+
+/* ---------- 통계 ---------- */
+let statYear=new Date().getFullYear();
+const NS="http://www.w3.org/2000/svg";
+const sv=(tag,attrs)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e};
+function yearData(y){
+  const out=[];
+  for(let m=1;m<=12;m++){
+    const ym=y+"-"+pad(m), tr=monthTrips(ym), inc=tr.reduce((a,v)=>a+(Number(v.fee)||0),0), exp=(carlogs.get(ym)||[]).reduce((a,x)=>a+(Number(x.amt)||0),0), fe=fuelEconomy(ym);
+    out.push({m,ym,cnt:tr.length,inc,exp,kml:fe?fe.kml:null,st:settle[ym]||null});
+  }
+  return out;
+}
+function niceMax(v){if(v<=0)return 1000000;const p=Math.pow(10,Math.floor(Math.log10(v)));for(const k of [1,2,2.5,5,10])if(v<=k*p)return k*p;return 10*p}
+const man=v=>v>=100000000?(v/100000000)+"억":v>=10000?Math.round(v/10000).toLocaleString("ko-KR")+"만":String(v);
+function barPath(x,y,w,h){const r=Math.min(3,w/2,h);return h<=0?"":"M"+x+","+(y+h)+"V"+(y+r)+"Q"+x+","+y+" "+(x+r)+","+y+"H"+(x+w-r)+"Q"+(x+w)+","+y+" "+(x+w)+","+(y+r)+"V"+(y+h)+"Z"}
+function renderStats(){
+  if($("stat").hidden)return;
+  $("yLabel").textContent=statYear+"년";
+  const d=yearData(statYear), cnt=d.reduce((a,x)=>a+x.cnt,0), inc=d.reduce((a,x)=>a+x.inc,0), exp=d.reduce((a,x)=>a+x.exp,0);
+  const due=d.reduce((a,x)=>a+(x.cnt&&!x.st?x.inc+Math.floor(x.inc*0.1):0),0);
+  $("yCnt").textContent=cnt.toLocaleString("ko-KR")+"회";$("yInc").textContent=won(inc);$("yExp").textContent=won(exp);$("yNet").textContent=won(inc-exp);$("yDue").textContent=won(due);
+  /* 그래프 */
+  const W=340,H=190,L=48,R=4,T=8,B=20,pw=W-L-R,ph=H-T-B, mx=niceMax(Math.max(...d.map(x=>Math.max(x.inc,x.exp)))), gw=pw/12, bw=Math.min(10,(gw-6)/2);
+  const box=$("chart");box.innerHTML="";
+  const svg=sv("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":statYear+"년 월별 운송료와 차량 지출 막대그래프. 값은 아래 표에 있습니다."});
+  for(const f of [0,0.5,1]){
+    const y=T+ph-ph*f;svg.append(sv("line",{x1:L,x2:W-R,y1:y,y2:y,stroke:"var(--grid)","stroke-width":1}));
+    const tx=sv("text",{x:L-5,y:y+3.5,"text-anchor":"end"});tx.textContent=man(mx*f);svg.append(tx);
+  }
+  const tip=el("div","tip");tip.hidden=true;
+  d.forEach((x,i)=>{
+    const gx=L+gw*i, cx=gx+gw/2, h1=ph*x.inc/mx, h2=ph*x.exp/mx;
+    if(x.inc>0)svg.append(sv("path",{d:barPath(cx-bw-1,T+ph-h1,bw,h1),fill:"var(--s1)"}));
+    if(x.exp>0)svg.append(sv("path",{d:barPath(cx+1,T+ph-h2,bw,h2),fill:"var(--s2)"}));
+    const tx=sv("text",{x:cx,y:H-6,"text-anchor":"middle"});tx.textContent=x.m;svg.append(tx);
+    const hit=sv("rect",{x:gx,y:T,width:gw,height:ph+B,fill:"transparent",tabindex:0,"aria-label":x.m+"월 운송료 "+won(x.inc)+", 차량 지출 "+won(x.exp)});
+    const show=()=>{
+      tip.textContent="";tip.append(el("div",null,x.m+"월"),el("div",null,"운송료 "+won(x.inc)),el("div",null,"차량 지출 "+won(x.exp)));tip.hidden=false;
+      const bw_=box.clientWidth, px=cx/W*bw_, tw=tip.offsetWidth;tip.style.left=Math.max(0,Math.min(bw_-tw,px-tw/2))+"px";
+    };
+    hit.addEventListener("pointerenter",show);hit.addEventListener("click",show);hit.addEventListener("focus",show);
+    hit.addEventListener("pointerleave",()=>{tip.hidden=true});hit.addEventListener("blur",()=>{tip.hidden=true});
+    svg.append(hit);
+  });
+  box.append(svg,tip);
+  /* 표 */
+  const t=$("mTbl");t.innerHTML="";
+  const hr=t.createTHead().insertRow();for(const c of ["월","횟수","운송료","지출","차액","연비","입금"])hr.append(el("th",null,c));
+  const tb=t.createTBody();
+  for(const x of d){
+    if(!x.cnt&&!x.exp)continue;
+    const tr=tb.insertRow();tr.append(el("th",null,x.m+"월"));
+    for(const c of [x.cnt,x.inc.toLocaleString("ko-KR"),x.exp.toLocaleString("ko-KR"),(x.inc-x.exp).toLocaleString("ko-KR"),x.kml?x.kml.toFixed(1):"–"])tr.insertCell().textContent=c;
+    const c=tr.insertCell();c.textContent=x.st?"완료":x.cnt?"대기":"–";if(x.st)c.className="ok";
+  }
+  if(!tb.rows.length){const tr=tb.insertRow(), c=tr.insertCell();c.colSpan=7;c.style.textAlign="left";c.textContent="이 해에 저장된 기록이 없습니다."}
+}
+$("yPrev").onclick=()=>{statYear--;renderStats()};$("yNext").onclick=()=>{statYear++;renderStats()};
+
+/* ---------- 백업 ---------- */
+const bkData=()=>({app:"freight-calc",version:1,savedAt:new Date().toISOString(),routes:Object.fromEntries(routes),days:Object.fromEntries(days),carlogs:Object.fromEntries(carlogs),reminders,settle,carinfo,profile});
+let bkPending=null;
+$("bkLoad").onclick=()=>{
+  if(bkPending){
+    const o=bkPending;bkPending=null;$("bkLoad").textContent="백업 파일 불러오기";
+    let rc=0;for(const k in o.routes||{})if(o.routes[k]&&o.routes[k].kind==="route"){routes.set(k,o.routes[k]);rc++}
+    if(rc)saveRoutes();
+    for(const k in o.days||{})if(/^\d{4}-\d{2}-\d{2}$/.test(k)&&Array.isArray(o.days[k])){days.set(k,o.days[k]);saveDay(k)}
+    for(const k in o.carlogs||{})if(/^\d{4}-\d{2}$/.test(k)&&Array.isArray(o.carlogs[k])){carlogs.set(k,o.carlogs[k]);saveCar(k)}
+    if(Array.isArray(o.reminders)&&o.reminders.length){const ids=new Set(o.reminders.map(x=>x.id));reminders=reminders.filter(x=>!ids.has(x.id)).concat(o.reminders);saveRem()}
+    if(o.settle&&typeof o.settle==="object"){Object.assign(settle,o.settle);saveSettle()}
+    if(o.profile&&o.profile.name&&!profile){profile=o.profile;saveProfile()}
+    if(Array.isArray(o.carinfo)&&o.carinfo.length){const ids=new Set(o.carinfo.map(x=>x.id));carinfo=carinfo.filter(x=>!ids.has(x.id)).concat(o.carinfo);saveInfo()}
+    renderAll();$("bkMsg").textContent="백업 파일을 불러왔습니다.";return;
+  }
+  $("bkFile").click();
+};
+$("bkFile").onchange=async()=>{
+  const f=$("bkFile").files[0];$("bkFile").value="";if(!f)return;
+  try{
+    const o=JSON.parse(await f.text());
+    if(!o||o.app!=="freight-calc")throw 0;
+    bkPending=o;$("bkLoad").textContent="불러오기 실행 (한 번 더 누르기)";
+    $("bkMsg").textContent=(o.savedAt||"").slice(0,10)+"에 저장한 백업입니다. 노선 "+Object.keys(o.routes||{}).length+"개, 운행일 "+Object.keys(o.days||{}).length+"일이 들어 있습니다. 한 번 더 누르면 불러옵니다.";
+  }catch(e){bkPending=null;$("bkLoad").textContent="백업 파일 불러오기";$("bkMsg").textContent="이 앱에서 저장한 백업 파일이 아닙니다."}
+};
+
+/* ---------- 세팅 자료 ---------- */
+let preType="general";
+const preKey=(a,b,k)=>a+"|"+b+"|"+k;
+const PRESET_RENAME=[["동서울우편집중국","중랑",9.4,"동서울물류센터","서울중랑우체국"],["동서울물류센터","중랑",9.4,"동서울물류센터","서울중랑우체국"]];
+const renameOf=r=>PRESET_RENAME.find(g=>g[0]===r.from&&g[1]===r.to&&g[2]===r.km);
+function presetMissing(){
+  const have=new Set([...routes.values()].map(r=>{const g=renameOf(r);return g?preKey(g[3],g[4],r.km):preKey(r.from,r.to,r.km)}));
+  return PRESET.filter(p=>!have.has(preKey(p[0],p[1],p[2])));
+}
+const presetOld=()=>[...routes.entries()].filter(([,r])=>renameOf(r));
+function renderPreset(){
+  const miss=presetMissing(), old=presetOld();$("preCard").hidden=!miss.length&&!old.length;
+  if(!miss.length&&old.length){$("preNote").textContent="세팅 자료가 바뀌었습니다. 중랑 노선을 \"동서울물류센터 → 중랑우체국\"으로 바꿉니다.";$("preBtn").textContent="바뀐 내용 반영";return}
+  if(!miss.length)return;
+  $("preNote").textContent="올려주신 세팅 자료의 노선 "+PRESET.length+"개 중 아직 등록되지 않은 "+miss.length+"개를 한 번에 등록합니다. 톤수와 종류는 나중에 노선마다 수정할 수 있습니다.";
+  $("preBtn").textContent="노선 "+miss.length+"개 등록";
+}
+$("preBtn").onclick=()=>{
+  const ton=parseFloat($("preTon").value), now=Date.now(), miss=presetMissing();
+  for(const [id,r] of presetOld()){
+    const g=renameOf(r), dupe=[...routes.entries()].some(([k,x])=>k!==id&&x.from===g[3]&&x.to===g[4]&&x.km===r.km);
+    if(dupe)routes.delete(id);else routes.set(id,Object.assign({},r,{from:g[3],to:g[4]}));
+  }
+  miss.forEach((p,i)=>routes.set("route_p"+now.toString(36)+i,{kind:"route",from:p[0],to:p[1],km:p[2],ton,type:preType,createdAt:now+i}));
+  saveRoutes();
+};
+
+/* ---------- 교체주기 안내 ---------- */
+const GUIDE={
+  car:{label:"승용차",src:"현대자동차그룹 소모품 안내와 일반 정비 안내 자료를 정리한 값입니다.",rows:[
+    ["엔진오일·오일필터","1만 5천km 또는 12개월마다 교환 (가혹 조건은 7,500km 또는 6개월)",15000,12],
+    ["에어컨 필터","1만~1만 5천km 또는 1년마다 교환",15000,12],
+    ["엔진 에어필터 (에어클리너)","2만~3만km마다 교환",30000,0],
+    ["브레이크 패드","3만km마다 점검, 마모 한계에 닿으면 교체",30000,0],
+    ["브레이크액","4만km 또는 2년마다 교환",40000,24],
+    ["냉각수 (부동액)","최초 20만km 또는 10년, 그 뒤 4만km 또는 2년마다 교환",40000,24],
+    ["타이어","5만km 또는 4~5년마다 교체, 매달 마모·공기압 점검",50000,48],
+    ["연료필터","디젤 6만km, 가솔린 16만km마다 교환",0,0],
+    ["배터리","3~4년마다 상태 점검 후 교체",0,36],
+    ["자동변속기 오일","가혹 조건에서 10만km마다 교환",100000,0],
+    ["점화플러그 (가솔린)","16만km마다 교환",160000,0],
+    ["와이퍼 블레이드","1년마다 또는 잘 닦이지 않을 때 교체",0,12]]},
+  mid:{label:"중형 화물차 (2.5~5톤급)",src:"현대자동차 상용차 소모품 정보(마이티 2019년형 기준, 매연필터는 메가트럭 기준)를 정리한 값입니다.",rows:[
+    ["엔진오일·오일필터","최초 3만km, 그 뒤 6만km 또는 12개월마다 교환 (매일 점검)",60000,12],
+    ["연료필터","최초 2만km, 그 뒤 4만km마다 교환",40000,0],
+    ["요소수 펌프 메인필터","10만km마다 교환",100000,0],
+    ["에어클리너 엘리먼트","6개월 또는 6만km마다 교환",60000,6],
+    ["냉각수","2만km마다 점검. 교환은 장수명(LLC-10) 10년 또는 20만km, 일반(LLC-2) 2년 또는 4만km",0,0],
+    ["브레이크·클러치액","2만km마다 교환",20000,0],
+    ["브레이크 계통 에어·누유","2만km마다 점검",20000,0],
+    ["타이어 위치 교환","1만 5천km마다",15000,0],
+    ["리어액슬 오일","최초 1만km, 그 뒤 1년 또는 4만km마다 교환",40000,12],
+    ["수동변속기 오일","변속기 형식에 따라 다름 (예: 5단 형식은 15만km마다 교환). 취급설명서 확인",0,0],
+    ["판스프링 U볼트","2만km마다 조임 상태 점검",20000,0],
+    ["팬 벨트","최초 10만km, 그 뒤 1만km마다 점검",10000,0],
+    ["밸브 간극","최초 5천km, 그 뒤 4만km마다 점검·조정",40000,0],
+    ["공조 장치 에어필터","1년 또는 3만km마다 교환",30000,12],
+    ["매연필터 (DPF)","24만km 또는 3년마다 청소",240000,36]]},
+  big:{label:"대형 화물차 (8톤 이상급)",src:"현대자동차 상용차 소모품 정보(뉴파워트럭·엑시언트 기준) 중 확인된 항목만 정리했습니다. 나머지 항목은 취급설명서를 확인하세요.",rows:[
+    ["엔진오일·오일필터","최초 3만km, 그 뒤 6만km 또는 12개월마다 교환 (매일 점검)",60000,12],
+    ["연료필터","최초 2만km, 그 뒤 4만km마다 교환",40000,0],
+    ["요소수 펌프 메인필터","10만km마다 교환",100000,0],
+    ["밸브 간극","최초 1만km, 그 뒤 6만km마다 점검·조정",60000,0],
+    ["수동변속기 오일","변속기 형식에 따라 4만km 또는 1년 ~ 24만km 또는 2년마다 교환. 취급설명서 확인",0,0],
+    ["공조 장치 에어필터","1년 또는 3만km마다 교환",30000,12],
+    ["매연필터 (DPF)","10만km 또는 1년마다 점검, 24만~30만km 또는 3년마다 청소",100000,12]]}
+};
+function renderGuide(){
+  const g=GUIDE[$("gdType").value]||GUIDE.mid, box=$("gdList");box.innerHTML="";
+  $("gdSrc").textContent=g.src;
+  for(const [name,text,km,mon] of g.rows){
+    const row=el("div","gd");row.append(el("div","n",name),el("div","m",text));
+    if(km||mon){
+      const b=el("button","link","알림 추가");b.setAttribute("aria-label",name+" 교체주기 알림 추가");
+      b.onclick=()=>{
+        placeRemForm("car");mKind="cycle";setSeg($("mKind"),"cycle");
+        $("mName").value=name;$("mKm").value=km||"";$("mMon").value=mon||"";
+        const o=curOdo();$("mLastKm").value=o!=null?o:"";$("mLastDate").value=today();
+        $("remForm").open=true;remForm();$("mName").scrollIntoView({block:"center"});
+      };
+      row.append(b);
+    }
+    box.append(row);
+  }
+}
+for(const k in GUIDE)$("gdType").append(new Option(GUIDE[k].label,k));
+try{$("gdType").value=localStorage.getItem("freight-guide")||"mid"}catch(e){$("gdType").value="mid"}
+if(!GUIDE[$("gdType").value])$("gdType").value="mid";
+$("gdType").onchange=()=>{try{localStorage.setItem("freight-guide",$("gdType").value)}catch(e){}renderGuide()};
+
+/* ---------- 자료 초기화 ---------- */
+let rsArmed=false;
+const hasPw=()=>!!(profile&&profile.pwHash);
+function rsView(){
+  $("rsPwLab").textContent=hasPw()?"비밀번호":'비밀번호가 없습니다. 확인을 위해 "초기화"라고 입력하세요';
+  $("rsPw").type=hasPw()?"password":"text";
+  $("rsBtn").textContent=rsArmed?"정말 초기화 (한 번 더 누르기)":"초기화";
+}
+$("rsBox").addEventListener("toggle",()=>{rsArmed=false;$("rsErr").hidden=true;$("rsPw").value="";rsView()});
+$("rsPw").addEventListener("input",()=>{rsArmed=false;$("rsErr").hidden=true;rsView()});
+$("rsBtn").onclick=async()=>{
+  const v=$("rsPw").value, ok=hasPw()?(await pwHash(v,profile.pwSalt))===profile.pwHash:v.trim()==="초기화";
+  if(!ok){rsArmed=false;$("rsErr").hidden=false;$("rsErr").textContent=hasPw()?"비밀번호가 맞지 않습니다.":'"초기화"라고 정확히 입력해 주세요.';rsView();return}
+  if(!rsArmed){rsArmed=true;rsView();return}
+  rsArmed=false;
+  const wipeProf=$("rsProf").checked, ids=["routes","reminders","settle","carinfo"].concat([...legacyRoutes],[...days.keys()].map(d=>"D"+d),[...carlogs.keys()].map(m=>"C"+m),[...legacy.keys()]);
+  if(wipeProf)ids.push("profile");
+  routes.clear();legacyRoutes.clear();days.clear();carlogs.clear();legacy.clear();reminders=[];settle={};carinfo=[];imp=[];impAsk.clear();
+  if(wipeProf)profile=null;
+  $("rsPw").value="";$("rsBtn").disabled=true;$("rsMsg").textContent="지우는 중입니다…";
+  let done=0,fail=0;
+  const jobs=ids.map(id=>enqueue(()=>storeMode==="db"?col.doc(id).delete():lsSave()).then(()=>{done++},()=>{fail++}));
+  renderAll();
+  await Promise.all(jobs);
+  if(storeMode!=="db")lsSave();
+  $("rsBtn").disabled=false;$("rsBox").open=false;rsView();
+  $("bkMsg").textContent=fail?"일부 자료를 지우지 못했습니다. 연결을 확인한 뒤 다시 초기화해 주세요.":"입력한 자료를 모두 초기화했습니다.";
+  $("rsMsg").textContent="";
+  if(wipeProf&&!fail)lockApp();else autoPreset();
+};
+
+/* ---------- 단가표 ---------- */
+function renderTable(){
+  if($("rate").hidden)return;
+  const pr=routes.get($("pTo").value), pk=parseFloat($("pKm").value), r=pr&&pk>=0?lookup(pType,pk,pr.ton):null, hit=r&&!r.over&&pType===tblType?r:null, t=$("tbl");t.innerHTML="";
+  const thead=t.createTHead().insertRow();thead.append(el("th",null,"km 미만"));
+  for(const x of RATES.tons)thead.append(el("th",null,x+"톤"));
+  const tb=t.createTBody();
+  RATES[tblType].forEach((row,i)=>{
+    const tr=tb.insertRow();if(hit&&hit.ri===i)tr.className="hit";
+    tr.append(el("th",null,row[0]));
+    for(let c=1;c<row.length;c++){const td=tr.insertCell();td.textContent=Math.floor(row[c]).toLocaleString("ko-KR");if(hit&&hit.ri===i&&hit.ci===c-1)td.className="hit"}
+  });
+}
+
+/* ---------- 화면 ---------- */
+function renderAll(){renderGate();rsView();if(imp.length)renderImp();renderHome();renderToday();renderHist();renderRoutes();renderCar();renderIns();renderInfo();renderStats()}
+function seg(box,cb){box.querySelectorAll("button").forEach(b=>b.onclick=()=>{setSeg(box,b.dataset.v);cb(b.dataset.v)})}
+seg($("rType"),v=>{rType=v;routeForm()});
+seg($("preType"),v=>{preType=v});
+seg($("pType"),v=>{pType=v;pFeeManual=false;renderPicker()});
+$("pFee").addEventListener("input",()=>{pFeeManual=$("pFee").value!=="";renderPicker()});
+$("rQ").addEventListener("input",renderRoutes);
+$("pFrom").onchange=()=>{try{localStorage.setItem("freight-origin",$("pFrom").value)}catch(e){}$("pTo").value="";renderPicker()};
+$("pTo").onchange=renderPicker;
+const pNewOk=()=>{$("pNewSave").disabled=!($("pNewTo").value.trim()&&parseFloat($("pNewKm").value)>=0)};
+$("pNewBtn").onclick=()=>{$("pNew").hidden=!$("pNew").hidden;$("pNewTitle").textContent=$("pFrom").value+" 출발 노선 등록";pNewOk();if(!$("pNew").hidden)$("pNewTo").focus()};
+$("pNewCancel").onclick=()=>{$("pNew").hidden=true};
+for(const id of ["pNewTo","pNewKm"])$(id).addEventListener("input",pNewOk);
+$("pNewSave").onclick=()=>{
+  const from=$("pFrom").value, to=$("pNewTo").value.trim(), km=parseFloat($("pNewKm").value), ton=parseFloat($("pNewTon").value);
+  if(!from||!to||!(km>=0))return;
+  const ex=[...routes.entries()].find(([,r])=>r.from===from&&r.to===to), id=ex?ex[0]:"route_n"+uid6();
+  routes.set(id,ex?Object.assign({},ex[1],{km,ton}):{kind:"route",from,to,km,ton,type:"general",createdAt:Date.now()});
+  $("pNewTo").value="";$("pNewKm").value="";$("pNew").hidden=true;
+  renderPicker();$("pTo").value=id;pSel="";
+  saveRoutes();$("dayMsg").textContent=from+" → "+to+" 노선을 등록했습니다.";
+};
+$("pKm").addEventListener("input",()=>{pFeeManual=false;renderPicker()});
+$("pKmSave").onclick=()=>{const id=$("pTo").value, r=routes.get(id), km=parseFloat($("pKm").value);if(r&&km>=0)saveRoute(id,Object.assign({},r,{km}))};
+$("pAdd").onclick=()=>{const id=$("pTo").value, r=routes.get(id), tr=r?tripFromRoute(id,r,parseFloat($("pKm").value),pType,parseFloat($("pFee").value)):null;if(tr&&curDate()){$("dayMsg").textContent="";addTrip(curDate(),tr)}};
+seg($("tType"),v=>{tblType=v;renderTable()});
+seg($("cCat"),v=>{cCat=v;carForm()});
+seg($("hView"),v=>{$("hList").hidden=v!=="list";$("hCal").hidden=v!=="cal";renderHist()});
+$("cLit").addEventListener("input",()=>{litManual=$("cLit").value!==""});$("cPrice").addEventListener("input",carForm);
+for(const id of ["nLabel","nValue"])$(id).addEventListener("input",infoOk);
+seg($("mKind"),v=>{mKind=v;remForm()});
+seg($("mInspType"),v=>{mInspType=v});
+let lastSub="calc";
+function showTab(name){
+  if(!unlocked)return;
+  const top=name==="home"||name==="car"||name==="stat"||name==="ins"||name==="contact"?name:"trans";
+  if(name==="car"||name==="ins")placeRemForm(name);
+  if(top==="trans")lastSub=name;
+  document.querySelectorAll("#topTabs button").forEach(x=>x.setAttribute("aria-selected",x.dataset.top===top));
+  document.querySelectorAll("#subTabs button").forEach(x=>x.setAttribute("aria-selected",x.dataset.tab===name));
+  $("subTabs").hidden=top!=="trans";
+  for(const id of ["home","calc","hist","routes","car","ins","contact","stat","rate"])$(id).hidden=id!==name;
+  if(name==="stat")renderStats();
+  if(name==="hist")$("hMonth").value=(curDate()||today()).slice(0,7),renderHist();
+  if(name==="rate")renderTable();
+  if(name==="home")renderHome();
+  window.scrollTo(0,0);
+}
+const DOW=["일","월","화","수","목","금","토"];
+function showDue(box){const due=dueReminders();box.hidden=!due.length;box.textContent=due.length?"차량 점검 필요: "+due.join(", "):""}
+const dueReminders=()=>reminders.map(r=>({r,s:remStatus(r)})).filter(x=>x.s.lv).map(x=>x.r.name+" ("+x.s.text+")");
+function renderHome(){
+  if($("home").hidden)return;
+  const td=today(), ym=td.slice(0,7), dn=new Date();
+  const tr=(days.get(td)||[]), leg=[...legacy.values()].filter(v=>v.date===td);
+  tick();
+  const showReg=storeReady&&(!profile||regEdit);
+  $("hmLock").hidden=!(profile&&profile.pwHash);$("gPwDel").hidden=!(profile&&profile.pwHash);
+  $("gPwNote").textContent=profile&&profile.pwHash?"비밀번호가 등록되어 있습니다. 바꾸려면 새 비밀번호를 넣고, 그대로 두려면 비워 두세요.":"비밀번호를 등록하면 앱을 열 때마다 물어봅니다.";
+  $("regCard").hidden=!showReg;$("hmWho").hidden=!profile;
+  $("regTitle").textContent=profile?"차량·운행자 정보 수정":"차량·운행자 등록";$("gSave").textContent=profile?"수정 저장":"등록";$("gCancel").hidden=!profile;
+  if(profile){$("hmName").textContent=profile.name+" 님";$("hmOrg").textContent=profile.org||"";$("hmOrg").hidden=!profile.org;$("hmPlate").textContent=[profile.plate,profile.phone].filter(Boolean).join(" · ")}
+  $("hmCnt").textContent=(tr.length+leg.length)+"회";
+  $("hmSum").textContent=won(tr.concat(leg).reduce((a,x)=>a+(Number(x.fee)||0),0));
+  const mt=monthTrips(ym), inc=mt.reduce((a,x)=>a+(Number(x.fee)||0),0), exp=(carlogs.get(ym)||[]).reduce((a,x)=>a+(Number(x.amt)||0),0);
+  $("hmMonth").textContent="이번 달 · "+(dn.getMonth()+1)+"월";
+  $("hmMCnt").textContent=mt.length+"회";$("hmMInc").textContent=won(inc);$("hmMExp").textContent=won(exp);$("hmMNet").textContent=won(inc-exp);
+  showDue($("homeAlert"));
+  $("hmCap").hidden=!impOn;
+  const rec=[];
+  for(const [d,a] of days)if(a.length)rec.push({d,k:1,label:"운행 "+a.length+"회",v:a.reduce((s,x)=>s+(Number(x.fee)||0),0)});
+  for(const a of carlogs.values())for(const x of a)rec.push({d:x.date,k:0,label:CAT_NAME[x.cat]+(x.memo?" · "+x.memo:""),v:-(Number(x.amt)||0)});
+  rec.sort((a,b)=>a.d<b.d?1:a.d>b.d?-1:b.k-a.k);
+  const box=$("hmRecent");box.innerHTML="";
+  if(!rec.length)box.append(el("div","note","아직 기록이 없습니다. 운행이나 주유를 기록하면 여기에 최근 순으로 나옵니다."));
+  for(const r of rec.slice(0,8)){const row=el("div","rec");row.append(el("span","d",r.d.slice(5).replace("-","/")),el("span",null,r.label),el("span","v",(r.v<0?"−":"")+won(Math.abs(r.v))));box.append(row)}
+}
+function tick(){
+  const n=new Date(), ds=n.getFullYear()+"년 "+(n.getMonth()+1)+"월 "+n.getDate()+"일 "+DOW[n.getDay()]+"요일";
+  $("gtTime").textContent=pad(n.getHours())+":"+pad(n.getMinutes());$("gtDate").textContent=ds;$("hmDate").textContent=ds;
+}
+setInterval(tick,15000);
+/* ---------- 첫 화면과 비밀번호 ---------- */
+let unlocked=false;
+async function pwHash(pw,salt){
+  const s=salt+"|"+pw;
+  try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+  catch(e){let h1=0x811c9dc5,h2=5381;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h1=Math.imul(h1^c,16777619);h2=(Math.imul(h2,33)+c)|0}return "f"+(h1>>>0).toString(16)+(h2>>>0).toString(16)}
+}
+const newSalt=()=>uid6()+uid6();
+const maskName=n=>n.length<=1?n:n.length===2?n[0]+"*":n[0]+"*".repeat(n.length-2)+n[n.length-1];
+function renderGate(){
+  tick();
+  if(unlocked)return;
+  const st=!storeReady?"load":!profile?"new":profile.pwHash?"lock":"open";
+  $("gtLoad").hidden=st!=="load";$("gtNew").hidden=st!=="new";$("gtLock").hidden=st!=="lock";$("gtOpen").hidden=st!=="open";
+  $("gtHello").textContent=st==="lock"?maskName(profile.name)+" 님, 비밀번호를 입력하세요":"";
+  $("gtHello2").textContent=st==="open"?profile.name+" 님, 안녕하세요":"";
+  if(profile)$("kHintBtn").hidden=!profile.hint;
+}
+function enterApp(){unlocked=true;autoPreset();document.body.classList.remove("locked");$("kPass").value="";$("kErr").hidden=true;$("kHintTxt").hidden=true;showTab("home")}
+function lockApp(){unlocked=false;regEdit=false;document.body.classList.add("locked");renderGate();window.scrollTo(0,0)}
+function pwCheck(a,b){return !a&&!b?"":a.length<4?"비밀번호는 4자 이상이어야 합니다.":a!==b?"비밀번호와 확인이 서로 다릅니다.":""}
+const kOk=()=>{$("kStart").disabled=!($("kName").value.trim()&&$("kPlate").value.trim())};
+for(const id of ["kName","kPlate"])$(id).addEventListener("input",kOk);
+$("kStart").onclick=async()=>{
+  const pw=$("kPw").value, err=pwCheck(pw,$("kPw2").value);
+  $("kMsg").hidden=!err;$("kMsg").textContent=err;if(err)return;
+  const p={name:$("kName").value.trim(),plate:$("kPlate").value.trim(),phone:$("kPhone").value.trim(),org:$("kOrg").value.trim(),pwHash:"",pwSalt:"",hint:""};
+  if(pw){p.pwSalt=newSalt();p.pwHash=await pwHash(pw,p.pwSalt);p.hint=$("kHint").value.trim()}
+  profile=p;for(const id of ["kPw","kPw2"])$(id).value="";
+  saveProfile();enterApp();
+};
+let failN=0;
+async function tryEnter(){
+  if(!profile||!profile.pwHash)return;
+  const ok=(await pwHash($("kPass").value,profile.pwSalt))===profile.pwHash;
+  if(ok){failN=0;enterApp();return}
+  failN++;$("kErr").hidden=false;$("kErr").textContent="비밀번호가 맞지 않습니다."+(failN>=3&&profile.hint?" 힌트를 확인해 보세요.":"");$("kPass").value="";
+}
+$("kEnter").onclick=tryEnter;
+$("kPass").addEventListener("keydown",e=>{if(e.key==="Enter")tryEnter()});
+$("kHintBtn").onclick=()=>{$("kHintTxt").hidden=false;$("kHintTxt").textContent="힌트: "+profile.hint};
+$("kOpen").onclick=enterApp;
+const regOk=()=>{$("gSave").disabled=!($("gName").value.trim()&&$("gPlate").value.trim())};
+for(const id of ["gName","gPlate"])$(id).addEventListener("input",regOk);
+$("hmEdit").onclick=()=>{regEdit=true;$("gName").value=profile.name;$("gPlate").value=profile.plate;$("gPhone").value=profile.phone||"";$("gOrg").value=profile.org||"";$("gPw").value="";$("gPw2").value="";$("gHint").value=profile.hint||"";$("gMsg").hidden=true;regOk();renderHome();$("regCard").scrollIntoView({block:"center"})};
+$("gCancel").onclick=()=>{regEdit=false;renderHome()};
+$("gSave").onclick=async()=>{
+  const pw=$("gPw").value, err=pwCheck(pw,$("gPw2").value);
+  $("gMsg").hidden=!err;$("gMsg").textContent=err;if(err)return;
+  const old=profile||{}, p={name:$("gName").value.trim(),plate:$("gPlate").value.trim(),phone:$("gPhone").value.trim(),org:$("gOrg").value.trim(),pwHash:old.pwHash||"",pwSalt:old.pwSalt||"",hint:old.hint||"",presetVer:old.presetVer||0};
+  if(pw){p.pwSalt=newSalt();p.pwHash=await pwHash(pw,p.pwSalt)}
+  if(p.pwHash)p.hint=$("gHint").value.trim();
+  profile=p;regEdit=false;
+  saveProfile();
+};
+$("gPwDel").onclick=()=>{
+  if(!pwDelArmed){pwDelArmed=true;$("gPwDel").textContent="정말 삭제 (한 번 더 누르기)";return}
+  pwDelArmed=false;$("gPwDel").textContent="비밀번호 삭제 (비밀번호 없이 사용)";
+  profile=Object.assign({},profile,{pwHash:"",pwSalt:"",hint:""});regEdit=false;saveProfile();
+};
+let pwDelArmed=false;
+$("hmLock").onclick=lockApp;
+$("hmAdd").onclick=()=>{$("tDate").value=today();showTab("calc");renderToday();$("rtCard").scrollIntoView({block:"start"})};
+$("hmCap").onclick=()=>{$("tDate").value=today();showTab("calc");renderToday();$("impBtn").click()};
+$("hmHist").onclick=()=>{$("tDate").value=today();showTab("hist")};
+$("hmFuel").onclick=()=>{showTab("car");cCat="fuel";setSeg($("cCat"),"fuel");carForm();$("cAmt").scrollIntoView({block:"center"});$("cAmt").focus()};
+document.querySelectorAll("#subTabs button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+document.querySelectorAll("#topTabs button").forEach(b=>b.onclick=()=>showTab(b.dataset.top==="trans"?lastSub:b.dataset.top));
+$("goRoutes").onclick=()=>showTab("routes");
+for(const s of ["pNewTon","rTon","preTon"]){for(const x of RATES.tons)$(s).append(new Option(x+"톤",String(x)));$(s).value="5"}
+$("tDate").value=today();$("hMonth").value=today().slice(0,7);$("cMonth").value=today().slice(0,7);$("cDate").value=today();
+$("cMonth").onchange=()=>{cArmed=null;renderCar()};
+for(const id of ["cDate","cAmt"])$(id).addEventListener("input",carForm);
+for(const id of ["mName","mKm","mMon","mLastKm","mLastDate","mDue","mInspDue","iName","iDue","iStart"])$(id).addEventListener("input",remForm);
+$("iStart").addEventListener("change",()=>{if($("iStart").value){if(!$("iDue").value)$("iDue").value=addMonths($("iStart").value,12);if(!$("iPay").value)$("iPay").value=$("iStart").value;remForm()}});
+$("tDate").onchange=()=>{$("dayMsg").textContent="";renderToday()};
+for(const id of ["rFrom","rTo","rKm","rTon"])$(id).addEventListener("input",routeForm);
+$("pNum").hidden=true;
+placeRemForm("car");
+routeForm();carForm();remForm();renderGuide();infoOk();rsView();renderAll();
+renderGate();
+if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useLocal();
+</script>
+<script>
+/* 설치 앱 전용 기능: 저장 미러, 폰 알림, 자동 백업, 날씨, 지문 잠금, 뒤로 가기 */
+(function(){
+  if(!window.Native)return;
+  document.body.classList.add("app");
+  /* 1) 저장할 때마다 앱 내부 파일에도 복사해 둔다 */
+  const _ls=lsSave;
+  lsSave=function(){_ls();try{Native.persist(localStorage.getItem(LS)||"")}catch(e){}};
+  /* 2) 기한 알림을 폰 알림으로 예약한다 */
+  function syncReminders(){
+    if(!storeReady)return;
+    const list=[], td=today();
+    const add=(r,date,text)=>{if(date>=td)list.push({id:r.id+"|"+date,date,title:r.name,text})};
+    for(const r of reminders){
+      if(r.kind==="insp"&&r.due){
+        add(r,addDays(r.due,-90),"검사 기간이 시작됐습니다. 만료일은 "+r.due+"입니다.");
+        add(r,addDays(r.due,-30),"검사 만료일까지 30일 남았습니다 ("+r.due+").");
+        add(r,addDays(r.due,-7),"검사 만료일까지 7일 남았습니다 ("+r.due+").");
+        add(r,addDays(r.due,-1),"내일이 검사 만료일입니다.");
+        add(r,r.due,"오늘이 검사 만료일입니다.");
+        add(r,addDays(r.due,24),"과태료 없이 검사받을 수 있는 날이 7일 남았습니다.");
+      }else if((r.kind==="ins"||r.kind==="date")&&r.due){
+        add(r,addDays(r.due,-30),"만기까지 30일 남았습니다 ("+r.due+").");
+        add(r,addDays(r.due,-7),"만기까지 7일 남았습니다 ("+r.due+").");
+        add(r,addDays(r.due,-1),"내일이 만기일입니다.");
+        add(r,r.due,"오늘이 만기일입니다.");
+      }else if(r.kind==="cycle"){
+        if(r.everyMon&&r.lastDate){
+          const due=addMonths(r.lastDate,r.everyMon);
+          add(r,addDays(due,-30),"교체 시기까지 30일 남았습니다 ("+due+").");
+          add(r,addDays(due,-7),"교체 시기까지 7일 남았습니다 ("+due+").");
+          add(r,due,"오늘이 교체 예정일입니다.");
+        }
+        const st=remStatus(r);
+        if(r.everyKm&&st.lv)add(r,addDays(td,1),st.text);
+      }
+    }
+    try{Native.setReminders(JSON.stringify(list))}catch(e){}
+  }
+  let syncT=null;
+  const _ra=renderAll;
+  renderAll=function(){_ra();clearTimeout(syncT);syncT=setTimeout(syncReminders,800)};
+  /* 3) 7일마다 다운로드 폴더에 자동 백업한다 */
+  const bkNote=document.createElement("div");bkNote.className="note";bkNote.id="autoBk";$("bkMsg").after(bkNote);
+  function showBk(){let d="";try{d=localStorage.getItem("freight-autobk")||""}catch(e){}bkNote.textContent=d?"마지막 자동 백업: "+d+" (다운로드 폴더의 운송모바일). 7일마다 자동으로 저장됩니다.":"기록이 쌓이면 7일마다 다운로드 폴더에 자동으로 백업됩니다."}
+  function autoBackup(){
+    try{
+      if(!(days.size||carlogs.size||reminders.length||carinfo.length))return;
+      const last=localStorage.getItem("freight-autobk")||"";
+      if(last&&dayDiff(last)>-7)return;
+      const bytes=new TextEncoder().encode(JSON.stringify(bkData()));let s="";
+      for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));
+      if(Native.saveFile("운송모바일_자동백업_"+today()+".json",btoa(s))==="ok"){localStorage.setItem("freight-autobk",today());showBk()}
+    }catch(e){}
+  }
+  showBk();
+  /* 4) 날씨 */
+  const WMO=c=>c===0?"맑음":c<=2?"대체로 맑음":c===3?"흐림":c<=48?"안개":c<=57?"이슬비":c<=67?"비":c<=77?"눈":c<=82?"소나기":c<=86?"눈 소나기":"뇌우";
+  const old=document.querySelector("#gate .wx"), wx=document.createElement("button");
+  wx.className="wx";wx.id="wxBox";wx.style.cssText="width:100%;border:0;font:inherit;font-weight:700;line-height:1.5";wx.textContent="날씨를 불러오는 중…";old.replaceWith(wx);
+  let wxAt=0;
+  async function loadWeather(force){
+    if(!force&&Date.now()-wxAt<25*60000)return;
+    const loc=String(Native.getLocation()||"").split(","), here=loc.length===2&&isFinite(parseFloat(loc[0]));
+    const lat=here?loc[0]:"37.5385", lon=here?loc[1]:"127.0823";
+    try{
+      const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,weather_code,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FSeoul&forecast_days=1");
+      const j=await r.json(), c=j.current, d=j.daily;
+      const line=Math.round(c.temperature_2m)+"°C "+WMO(c.weather_code)+" · 최고 "+Math.round(d.temperature_2m_max[0])+"° 최저 "+Math.round(d.temperature_2m_min[0])+"° · 강수확률 "+(d.precipitation_probability_max[0]??"–")+"%";
+      wx.textContent=(here?"현재 위치 ":"서울 광진구 ")+line+(here?"":" (눌러서 현재 위치로 보기)");
+      wxAt=Date.now();
+    }catch(e){wx.textContent="날씨를 불러오지 못했습니다. 눌러서 다시 시도"}
+  }
+  wx.onclick=()=>{if(!String(Native.getLocation()||""))Native.requestLocation();loadWeather(true)};
+  window.__locGranted=()=>loadWeather(true);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadWeather(false)});
+  setInterval(()=>loadWeather(false),30*60000);
+  loadWeather(true);
+  /* 5) 지문·화면 잠금으로 열기 */
+  let canAuth=false;try{canAuth=!!Native.canAuth()}catch(e){}
+  window.__authDone=ok=>{if(ok&&profile&&profile.pwHash&&!unlocked){failN=0;enterApp()}};
+  if(canAuth){
+    const b=document.createElement("button");b.className="btn ghost";b.id="kBio";b.textContent="지문·화면 잠금으로 열기";b.style.marginTop="8px";
+    $("kEnter").after(b);b.onclick=()=>Native.auth();
+    setTimeout(()=>{if(profile&&profile.pwHash&&!unlocked)Native.auth()},700);
+  }
+  /* 6) 들어갈 때 자동 백업과 날씨 갱신 */
+  const _enter=enterApp;
+  enterApp=function(){_enter();setTimeout(autoBackup,1500);loadWeather(false)};
+  $("kOpen").onclick=enterApp;
+  setTimeout(syncReminders,2000);
+  /* 앱을 5분 넘게 떠났다 돌아오면 다시 잠근다 */
+  window.__resume=ms=>{if(ms>300000&&unlocked&&profile&&profile.pwHash){lockApp();if(canAuth)setTimeout(()=>Native.auth(),400)}};
+  /* 7) 폰의 뒤로 가기: 홈이 아니면 홈으로 */
+  window.__back=()=>{if(unlocked&&$("home").hidden){showTab("home");return true}return false};
+})();
+</script>
+</body>
+</html>
