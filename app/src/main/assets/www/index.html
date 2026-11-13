@@ -634,6 +634,9 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0;font-size:17px}
   const ocr=async file=>{const data=await toB64(file);return new Promise(res=>{const id="o"+Date.now()+Math.random().toString(36).slice(2,6);pending[id]=res;Native.ocr(id,data)})};
   const pad=n=>String(n).padStart(2,"0");
   /* "운송확인서 선택" 화면에서 인식한 글자 줄({t,x,y,w,h})을 운송확인서 목록으로 바꾼다 */
+  /* 숫자 자리에서 글자로 잘못 읽힌 것을 숫자로 되돌린다 */
+  const fixNum=v=>v.replace(/[OoQD]/g,"0").replace(/[lI|i!]/g,"1").replace(/[Ss]/g,"5").replace(/B/g,"8").replace(/[Zz]/g,"2");
+  const HAN=/[가-힣]/;
   function parseList(r){
     const W=r.w||1080, LABELS=["운송확인서번호","운행시간","경유국","운송편명","차량용적","차량번호"], L=[];
     for(const o of r.lines||[]){
@@ -643,6 +646,8 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0;font-size:17px}
         while(i<t.length&&j<k.length){if(/\s/.test(t[i])){i++;continue}if(t[i]===k[j]){i++;j++}else break}
         val=t.slice(i).trim();break;
       }
+      /* 항목 이름이 한 글자 틀리게 읽힌 경우 */
+      if(!lab&&o.x<W*0.38)for(const k of LABELS)if(Math.abs(flat.length-k.length)<=1&&lev(flat,k)<=1){lab=k;val="";break}
       const h=o.h||30;L.push({lab,val,x:o.x,h,cy:o.y+h/2,merged:!!(lab&&val)});
     }
     L.sort((a,b)=>a.cy-b.cy);
@@ -650,22 +655,30 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0;font-size:17px}
     for(let i=0;i<L.length;i++){
       const p=L[i];if(p.lab)continue;
       for(let j=i+1;j<L.length&&L[j].cy-p.cy<p.h*0.5;j++){
-        const q=L[j];if(q.lab||Math.min(p.x,q.x)<W*0.4)continue;
+        const q=L[j];if(q.lab||Math.min(p.x,q.x)<W*0.38)continue;
         if(q.x<p.x){p.val=q.val+" "+p.val;p.x=q.x}else p.val+=" "+q.val;
         L.splice(j,1);j--;
       }
     }
-    const NO=/(?:^|[^\d])(\d{10,})\s*$/, anchors=L.filter(l=>NO.test(l.val));
-    const xs=anchors.filter(a=>!a.merged).map(a=>a.x), vx=xs.length?Math.min(...xs)-W*0.04:W*0.4;
-    const isVal=l=>l.merged||(!l.lab&&l.x>=vx), out=[];
-    anchors.forEach((a,i)=>{
-      const y0=a.cy-a.h*0.6, y1=i+1<anchors.length?anchors[i+1].cy-anchors[i+1].h*0.6:Infinity;
-      const reg=L.filter(l=>l.cy>=y0&&l.cy<y1), vals=reg.filter(l=>l.val&&isVal(l));
-      const DT=/(\d{4})\s*[-.]\s*(\d{1,2})\s*[-.]\s*(\d{1,2})/, dtL=vals.find(l=>l!==a&&DT.test(l.val));
-      if(!dtL)return;
-      const d=dtL.val.match(DT), tm=dtL.val.slice(d.index+d[0].length).match(/(\d{1,2})\s*[:;.]\s*(\d{2})/);
-      const tonLab=reg.find(l=>l.lab==="차량용적"), nameLab=reg.find(l=>l.lab==="운송편명"), NUM=/(\d+(\.\d+)?)/;
-      let tonL=vals.find(l=>/\d+(\.\d+)?\s*톤/.test(l.val));
+    const DT=/(20\d{2})\s*[-.]\s*(\d{1,2})\s*[-.]\s*(\d{1,2})/, NUM=/(\d+(\.\d+)?)/;
+    const dtOf=l=>HAN.test(l.val)?null:fixNum(l.val).match(DT);
+    const V=L.filter(l=>l.val&&(l.merged||(!l.lab&&l.x>=W*0.38)));
+    /* 운행시간 줄마다 운송 하나. 바로 윗줄이 운송확인서 번호다. */
+    const ents=[];
+    V.forEach((l,i)=>{
+      const d=dtOf(l);if(!d)return;
+      const up=V[i-1], digits=up&&!dtOf(up)?fixNum(up.val.replace(/\s/g,"").replace(/^[^0-9]/,"")).replace(/\D/g,""):"";
+      const head=up&&l.cy-up.cy<l.h*3.5&&digits.length>=8&&!HAN.test(up.val)?up:null;
+      ents.push({dt:l,d,head,digits,y0:(head||l).cy-l.h*0.6});
+    });
+    const out=[];
+    ents.forEach((en,i)=>{
+      if(!en.head)return; /* 번호가 화면 위로 잘린 운송은 다른 캡처에서 읽는다 */
+      const y1=i+1<ents.length?ents[i+1].y0:Infinity, dtL=en.dt, a=en.head, d=en.d;
+      const reg=L.filter(l=>l.cy>=en.y0&&l.cy<y1), vals=V.filter(l=>l.cy>=en.y0&&l.cy<y1);
+      const fx=fixNum(dtL.val), tm=fx.slice(fx.indexOf(d[0])+d[0].length).match(/(\d{1,2})\s*[:;.]\s*(\d{2})/);
+      const tonLab=reg.find(l=>l.lab==="차량용적"), nameLab=reg.find(l=>l.lab==="운송편명");
+      let tonL=vals.find(l=>l.cy>dtL.cy&&/\d+(\.\d+)?\s*톤/.test(l.val));
       if(!tonL&&tonLab)tonL=tonLab.merged&&NUM.test(tonLab.val)?tonLab:vals.find(l=>l!==dtL&&l!==a&&Math.abs(l.cy-tonLab.cy)<tonLab.h*0.8&&NUM.test(l.val));
       let nameL=null;
       if(nameLab){
@@ -674,10 +687,10 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0;font-size:17px}
       }
       const endY=nameL?nameL.cy:tonL?tonL.cy:Infinity;
       let stops=vals.filter(l=>l.cy>dtL.cy+1&&l.cy<endY-1&&l!==nameL&&l!==tonL&&l!==a).map(l=>l.val.replace(/\s/g,"")).filter(v=>(v.match(/[가-힣]/g)||[]).length>=2);
-      let name=nameL?nameL.val:"";
+      let name=nameL?nameL.val.replace(/\s/g,""):"";
       if(!nameL&&tonL&&stops.length>2)name=stops.pop();
-      if(stops.length<2)return;
-      out.push({no:"C"+a.val.match(NO)[1],date:d[1]+"-"+pad(d[2])+"-"+pad(d[3]),time:tm?pad(tm[1])+":"+tm[2]:"",stops,name,ton:tonL?parseFloat(tonL.val.match(NUM)[1]):0});
+      if(stops.length<2)return; /* 아래쪽이 잘린 운송 */
+      out.push({no:"C"+en.digits,date:d[1]+"-"+pad(d[2])+"-"+pad(d[3]),time:tm?pad(tm[1])+":"+tm[2]:"",stops,name,ton:tonL?parseFloat(tonL.val.match(NUM)[1]):0});
     });
     return out;
   }
@@ -707,9 +720,15 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0;font-size:17px}
   sample.limits=async()=>({images:{maxCount:10,mediaTypes:["image/png","image/jpeg","image/webp"]}});
   sample.json=async(prompt,opts)=>{
     const out=[],seen=new Set(),names=knownNames();
+    window.__ocrLog=[];
     for(const f of [].concat((opts&&opts.images)||[])){
       const r=await ocr(f);if(!r||r.error)throw {code:"image_rejected",message:r&&r.error};
-      for(const e of parseList(r))if(!seen.has(e.no)){seen.add(e.no);e.stops=e.stops.map(v=>snapName(v,names));out.push(e)}
+      window.__ocrLog.push(r);
+      for(const e of parseList(r)){
+        e.stops=e.stops.map(v=>snapName(v,names));
+        const key=[e.no,e.date,e.time,e.stops.join(">"),e.name].join("|");
+        if(!seen.has(key)){seen.add(key);out.push(e)}
+      }
     }
     return out;
   };
@@ -1067,7 +1086,10 @@ function matchRoute(stops){
   const sn=shortName(other), hit=hub?cands.find(([,r])=>r.to===other||shortName(r.to)===sn):null;
   return {hub,cands,id:hit?hit[0]:""};
 }
-const noSaved=(date,no)=>no&&(days.get(date)||[]).some(x=>x.no===no);
+/* 번호·운행시간·경유국·운송편명이 모두 같아야 같은 운송으로 본다. 하나라도 다르면 새로운 운송이다. */
+const impMemo=e=>[e.time,e.name].filter(Boolean).join(" ");
+const impKey=e=>[e.no,e.date,e.time||"",(e.stops||[]).join(">"),e.name||""].join("|");
+const noSaved=e=>e.no&&(days.get(e.date)||[]).some(x=>x.no===e.no&&(x.stops||"")===e.stops.join(" → ")&&(x.memo||"")===impMemo(e));
 function impFee(e){
   const r=routes.get(e.routeId), ton=e.tonSel||(RATES.tons.includes(e.ton)?e.ton:r?r.ton:5), type=e.type||(r?r.type:"general");
   const f=e.km>=0?lookup(type,e.km,ton):null, tf=f&&!f.over?f.fee:null;
@@ -1086,7 +1108,7 @@ function registerPair(p,k){
 function renderAsk(box){
   const seen=new Set();
   for(const e of imp){
-    if(e.routeId||noSaved(e.date,e.no))continue;
+    if(e.routeId||noSaved(e))continue;
     const p=pairOf(e);if(!p.to||seen.has(p.key))continue;seen.add(p.key);
     const a=impAsk.get(p.key)||{km:"",skip:false};impAsk.set(p.key,a);
     if(a.skip)continue;
@@ -1110,7 +1132,7 @@ function renderImp(){
   renderAsk(box);
   let n=0;
   for(const e of imp){
-    const dup=noSaved(e.date,e.no), f=impFee(e), okRow=!dup&&!!f;
+    const dup=noSaved(e), f=impFee(e), okRow=!dup&&!!f;
     const row=el("div","imp"), cb=el("input"), body=el("div");
     cb.type="checkbox";cb.checked=e.checked&&okRow;cb.disabled=!okRow;cb.setAttribute("aria-label",e.no+" 저장에 포함");
     cb.onchange=()=>{e.checked=cb.checked;renderImp()};
@@ -1161,7 +1183,7 @@ $("impCancel").onclick=()=>{imp=[];impAsk.clear();renderImp();$("impMsg").textCo
 $("impSave").onclick=()=>{
   const dates=new Set();let n=0,sum=0;
   for(const e of imp){
-    const f=impFee(e);if(!e.checked||!f||noSaved(e.date,e.no))continue;
+    const f=impFee(e);if(!e.checked||!f||noSaved(e))continue;
     const a=days.get(e.date)||[];
     const tr={id:uid6(),routeId:e.routeId,stops:e.stops.join(" → "),no:e.no,km:e.km>=0?e.km:0,ton:f.ton,type:f.type,fee:f.fee,memo:[e.time,e.name].filter(Boolean).join(" "),t:Date.now()+n};if(f.manual)tr.feeManual=true;a.push(tr);
     days.set(e.date,a);dates.add(e.date);n++;sum+=f.fee;
@@ -1185,16 +1207,17 @@ async function initImport(){
     $("impBtn").disabled=true;$("impMsg").textContent="캡처 "+files.length+"장을 읽는 중입니다…";
     try{
       const d=await sample.json(IMP_PROMPT,{images:files});
-      const seen=new Set(imp.map(e=>e.no)), add=[];
+      const seen=new Set(imp.map(impKey)), add=[];
       for(const x of Array.isArray(d)?d:[]){
         if(!x||typeof x.no!=="string"||!Array.isArray(x.stops)||x.stops.length<2||!/^\d{4}-\d{2}-\d{2}$/.test(x.date||""))continue;
-        const no=x.no.trim();if(seen.has(no))continue;seen.add(no);
-        const stops=x.stops.map(s=>String(s).trim()).filter(Boolean), m=matchRoute(stops), r=routes.get(m.id);
-        add.push({no,date:x.date,time:typeof x.time==="string"?x.time:"",stops,name:typeof x.name==="string"?x.name.trim():"",ton:Number(x.ton)||0,hub:m.hub,cands:m.cands,routeId:m.id,km:r?r.km:NaN,checked:!!r});
+        const no=x.no.trim(), stops=x.stops.map(s=>String(s).trim()).filter(Boolean), tm=typeof x.time==="string"?x.time:"", nm=typeof x.name==="string"?x.name.trim():"";
+        const key=impKey({no,date:x.date,time:tm,stops,name:nm});if(seen.has(key))continue;seen.add(key);
+        const m=matchRoute(stops), r=routes.get(m.id);
+        add.push({no,date:x.date,time:tm,stops,name:nm,ton:Number(x.ton)||0,hub:m.hub,cands:m.cands,routeId:m.id,km:r?r.km:NaN,checked:!!r});
       }
       imp=imp.concat(add).sort((a,b)=>(a.date+a.time<b.date+b.time?-1:1));
       renderImp();
-      const miss=imp.filter(e=>!e.routeId&&!noSaved(e.date,e.no)).length;
+      const miss=imp.filter(e=>!e.routeId&&!noSaved(e)).length;
       $("impMsg").textContent=add.length?"운송확인서 "+add.length+"건을 읽었습니다. 노선과 거리를 확인한 뒤 저장하세요."+(miss?" 등록되지 않은 노선이 있어 "+miss+"건을 찾지 못했습니다. 아래 질문에서 등록 여부를 정해 주세요.":"")+(over?" 한 번에 "+maxN+"장까지만 읽을 수 있어 나머지는 다시 골라 주세요.":""):"캡처에서 운송확인서를 찾지 못했습니다. \"운송확인서 선택\" 화면인지 확인해 주세요.";
     }catch(e){
       const c=e&&e.code;
@@ -1881,7 +1904,7 @@ if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useL
 (function(){
   if(!window.Native)return;
   document.body.classList.add("app");
-  const APP_VER="1.2";
+  const APP_VER="1.3";
   {const v=document.createElement("div");v.id="appVer";v.className="note";v.style.cssText="text-align:center;margin-top:14px";v.textContent="앱 버전 "+APP_VER;$("gate").append(v)}
   /* 1) 저장할 때마다 앱 내부 파일에도 복사해 둔다 */
   const _ls=lsSave;
@@ -1920,6 +1943,13 @@ if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useL
   let syncT=null;
   const _ra=renderAll;
   renderAll=function(){_ra();clearTimeout(syncT);syncT=setTimeout(syncReminders,800)};
+  /* 캡처가 잘못 읽혔을 때 원인을 볼 수 있게, 읽은 글자를 파일로 저장한다 */
+  {const b=document.createElement("button");b.className="link";b.id="ocrLogBtn";b.textContent="잘못 읽혔나요? 인식 기록 저장";b.style.cssText="padding-left:0;margin-top:6px";
+   $("impMsg").after(b);
+   b.onclick=()=>{const log=window.__ocrLog||[];if(!log.length){$("impMsg").textContent="먼저 캡처를 읽어 주세요.";return}
+     const bytes=new TextEncoder().encode(JSON.stringify(log));let s="";for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));
+     const d=new Date(), name="운송모바일_인식기록_"+today()+"_"+pad(d.getHours())+pad(d.getMinutes())+".json";
+     $("impMsg").textContent=Native.saveFile(name,btoa(s))==="ok"?"다운로드 폴더의 \"운송모바일\"에 "+name+" 파일을 저장했습니다.":"인식 기록을 저장하지 못했습니다."}}
   /* 3) 7일마다 다운로드 폴더에 자동 백업한다 */
   const bkNote=document.createElement("div");bkNote.className="note";bkNote.id="autoBk";$("bkMsg").after(bkNote);
   function showBk(){let d="";try{d=localStorage.getItem("freight-autobk")||""}catch(e){}bkNote.textContent=d?"마지막 자동 백업: "+d+" (다운로드 폴더의 운송모바일). 7일마다 자동으로 저장됩니다.":"기록이 쌓이면 7일마다 다운로드 폴더에 자동으로 백업됩니다."}
