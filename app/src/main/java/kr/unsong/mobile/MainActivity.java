@@ -13,8 +13,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.hardware.biometrics.BiometricManager;
 import android.hardware.biometrics.BiometricPrompt;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,7 +50,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -60,7 +57,7 @@ import java.util.concurrent.Executors;
 public class MainActivity extends Activity {
     private static final String HOST = "appassets.androidplatform.net";
     private static final String HOME = "https://" + HOST + "/index.html";
-    private static final int REQ_FILE = 1, REQ_LOCATION = 2, REQ_NOTIFY = 3;
+    private static final int REQ_FILE = 1, REQ_NOTIFY = 2;
 
     private WebView web;
     private SharedPreferences prefs;
@@ -92,7 +89,6 @@ public class MainActivity extends Activity {
             prefs.edit().putBoolean("askedNotify", true).apply();
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIFY);
         }
-        if (hasLocationPermission()) fetchLocation();
     }
 
     @Override
@@ -202,43 +198,6 @@ public class MainActivity extends Activity {
         fileCallback = null;
     }
 
-    /* ---------- 위치(날씨용) ---------- */
-    private boolean hasLocationPermission() {
-        return checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void fetchLocation() {
-        LocationManager lm = getSystemService(LocationManager.class);
-        if (lm == null) return;
-        try {
-            Location best = null;
-            for (String p : lm.getProviders(true)) {
-                Location l = lm.getLastKnownLocation(p);
-                if (l != null && (best == null || l.getTime() > best.getTime())) best = l;
-            }
-            if (best != null) saveLocation(best);
-            if (Build.VERSION.SDK_INT >= 30 && lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                lm.getCurrentLocation(LocationManager.NETWORK_PROVIDER, null, getMainExecutor(), l -> {
-                    if (l != null) saveLocation(l);
-                });
-            }
-        } catch (SecurityException | IllegalArgumentException e) {
-            // 위치를 못 얻으면 기본 지역 날씨를 그대로 쓴다.
-        }
-    }
-
-    private void saveLocation(Location l) {
-        String now = String.format(Locale.US, "%.3f,%.3f", l.getLatitude(), l.getLongitude());
-        if (now.equals(prefs.getString("loc", ""))) return;
-        prefs.edit().putString("loc", now).apply();
-        js("window.__locGranted&&__locGranted()");
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int request, String[] permissions, int[] results) {
-        super.onRequestPermissionsResult(request, permissions, results);
-        if (request == REQ_LOCATION && results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) fetchLocation();
-    }
 
     /* ---------- 화면에서 부르는 기능 (window.Native) ---------- */
     private class Bridge {
@@ -346,22 +305,6 @@ public class MainActivity extends Activity {
             js("__ocrDone(" + JSONObject.quote(id) + ",{error:" + JSONObject.quote(message) + "})");
         }
 
-        /** 저장해 둔 위치 "위도,경도". 없으면 빈 문자열. */
-        @JavascriptInterface
-        public String getLocation() {
-            return prefs.getString("loc", "");
-        }
-
-        @JavascriptInterface
-        public void requestLocation() {
-            runOnUiThread(() -> {
-                if (hasLocationPermission()) fetchLocation();
-                else requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQ_LOCATION);
-            });
-        }
-
-        /** 폰에 지문·PIN·패턴 같은 화면 잠금이 걸려 있는지. */
-        @JavascriptInterface
         public boolean canAuth() {
             KeyguardManager km = getSystemService(KeyguardManager.class);
             return km != null && km.isDeviceSecure();
