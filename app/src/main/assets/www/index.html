@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>운송 모바일</title>
+<title>우편 운송모바일</title>
 <style>
-:root{--bg:#f3f1ec;--card:#fffdf9;--ink:#1d2a33;--sub:#47535c;--line:#d2ccbf;--acc:#0f5c63;--acc-ink:#fff;--soft:#e4efee;--warn:#9a4a12;--warnbg:#fbeedd;--bad:#a32626;--s1:#2a78d6;--s2:#eb6834;--grid:#e3dfd5}
-@media not all{
-  :root{--bg:#14191c;--card:#1d2428;--ink:#e9eef0;--sub:#b7c3ca;--line:#3b464d;--acc:#4fb3b9;--acc-ink:#07282b;--soft:#22363a;--warn:#f0b274;--warnbg:#3a2b1a;--bad:#ff8f8f;--s1:#3987e5;--s2:#d95926;--grid:#323c42}
+:root{--bg:#f3f1ec;--card:#fffdf9;--ink:#1d2a33;--sub:#47535c;--line:#d2ccbf;--acc:#d62828;--acc-ink:#fff;--soft:#fbe9e6;--warn:#9a4a12;--warnbg:#fbeedd;--bad:#a32626;--s1:#2a78d6;--s2:#eb6834;--grid:#e3dfd5}
+@media not all{  /* 폰이 다크 모드여도 밝은 화면으로 고정 */
+  :root{--bg:#14191c;--card:#1d2428;--ink:#e9eef0;--sub:#b7c3ca;--line:#3b464d;--acc:#ff7a70;--acc-ink:#2b0707;--soft:#3a2222;--warn:#f0b274;--warnbg:#3a2b1a;--bad:#ff8f8f;--s1:#3987e5;--s2:#d95926;--grid:#323c42}
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;-webkit-text-size-adjust:100%;font-size:17px;line-height:1.6}
@@ -19,8 +19,35 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,
 .bnav button[aria-selected=true] svg{stroke-width:2.3}
 body.locked .bnav,body.locked h1,body.locked #subTabs,body.locked section:not(#gate){display:none!important}
 body:not(.locked) #gate{display:none!important}
-#gate .brand{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:6px 0 14px}
-#gate .brand small{display:block;font-size:14px;font-weight:500;color:var(--sub);margin-top:2px}
+/* 첫 화면과 로그인 화면 */
+body.locked{background-color:#354052;background-image:repeating-conic-gradient(#323d51 0 25%,#354052 0 50%);background-size:16px 16px}
+body.locked .wrap{max-width:none;padding:0}
+#gate{min-height:100svh;max-width:520px;margin:0 auto;padding:0 24px 26px;display:flex;flex-direction:column;color:#fff}
+#gate .gtop{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:36px 0 10px}
+.glogo{width:96px;height:96px;border-radius:24px;background:var(--acc);display:flex;align-items:center;justify-content:center}
+.glogo svg{width:62px;height:62px;fill:#fff}
+.glogo .cut{fill:var(--acc)}
+.glogo .flap{fill:none;stroke:var(--acc);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.gtitle{font-size:33px;font-weight:800;letter-spacing:-.04em;margin-top:16px;text-align:center}
+.gsub{margin-top:12px;text-align:center;font-size:17px;line-height:1.7;color:#d3dce6}
+.gclock{margin-top:14px;font-size:14.5px;color:#aab9c8;text-align:center;font-variant-numeric:tabular-nums}
+.gwx{display:block;margin-top:6px;font-size:14.5px;color:#d3dce6;text-align:center;font-weight:700;text-decoration:none;border:0;background:none;font-family:inherit;width:100%;line-height:1.6}
+#gBody{width:100%;margin-top:22px}
+#gate .card{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);color:#fff}
+#gate label{color:#d3dce6}
+#gate input{background:rgba(0,0,0,.22);border-color:rgba(255,255,255,.3);color:#fff}
+#gate input::placeholder{color:#9fb0c0}
+#gate #kPass{text-align:center;letter-spacing:.3em;font-weight:700}
+#gate .note{color:#b6c3d0}
+#gate .link{color:#fff;text-decoration:underline;display:block;width:100%;text-align:center;padding-left:0}
+#gate .warn{background:rgba(0,0,0,.25);border-color:rgba(255,255,255,.35);color:#ffd9a8}
+#gate .btn.ghost{color:#fff;border-color:rgba(255,255,255,.55);background:transparent}
+.gact{margin-top:14px}
+.gbot{width:100%}
+.gbtn{display:block;width:100%;padding:15px;border:0;border-radius:12px;background:#fff;color:#1d2a33;font:inherit;font-weight:700;font-size:18px;min-height:58px}
+.gbtn[disabled]{opacity:.5}
+.gfoot{margin-top:16px;text-align:center;font-size:13px;color:#9fb0c0;line-height:1.6}
+.vhide{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .card.hero{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
 .clock{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 .clock b{font-size:44px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
@@ -151,7 +178,7 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0;font-size:17px}
 </head>
 <body class="locked">
 <div class="wrap">
-<h1>운송 모바일</h1>
+<h1>우편 운송모바일</h1>
 <div class="subtabs" id="subTabs" role="tablist" aria-label="운송 메뉴" hidden>
   <button role="tab" data-tab="calc" aria-selected="true">운행</button>
   <button role="tab" data-tab="hist" aria-selected="false">내역</button>
@@ -160,42 +187,48 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0;font-size:17px}
 </div>
 
 <section id="gate">
-  <div class="brand">운송 모바일<small>우편 운송 운행·운송료·차량 관리</small></div>
-  <div class="card hero">
-    <div class="clock"><b id="gtTime">--:--</b><span id="gtDate"></span></div>
-    <a class="wx" href="https://www.weather.go.kr" target="_blank" rel="noopener">오늘 날씨 보기 (기상청) ›</a>
-  </div>
-  <div class="card" id="gtLoad"><div class="note" style="margin-top:0">불러오는 중입니다…</div></div>
-  <div class="card" id="gtNew" hidden>
-    <div class="ct">차량·운행자 등록</div>
-    <div class="note" style="margin-top:0">처음 한 번만 등록합니다. 이 정보는 이 폰에만 저장됩니다.</div>
-    <label for="kName">운행자 이름</label><input id="kName" autocomplete="name">
-    <label for="kOrg">소속 (선택)</label><input id="kOrg" autocomplete="organization">
-    <label for="kPlate">차량번호</label><input id="kPlate" autocomplete="off" placeholder="예: 12가3456">
-    <label for="kPhone">연락처 (선택)</label><input id="kPhone" type="tel" inputmode="tel" autocomplete="tel">
-    <div class="row">
-      <div><label for="kPw">비밀번호 (4자 이상)</label><input id="kPw" type="password" autocomplete="new-password"></div>
-      <div><label for="kPw2">비밀번호 확인</label><input id="kPw2" type="password" autocomplete="new-password"></div>
+  <div class="gtop">
+    <div class="glogo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="0.7" y="4.4" width="13.4" height="10.9" rx="1.3"/><path class="flap" d="M2.4 6.2l5 3.9 5-3.9"/><path d="M15.5 7.9h3.6c.42 0 .81.2 1.05.55l2.45 3.5c.14.2.22.45.22.7v2.35c0 .72-.58 1.3-1.3 1.3h-6.02c-.72 0-1.3-.58-1.3-1.3V9.2c0-.72.58-1.3 1.3-1.3z"/><path class="cut" d="M16.35 9.55h2.4c.14 0 .27.07.35.19l1.45 2.06h-4.2z"/><circle cx="5.6" cy="17.4" r="2.5"/><circle class="cut" cx="5.6" cy="17.4" r="1"/><circle cx="18" cy="17.4" r="2.5"/><circle class="cut" cx="18" cy="17.4" r="1"/></svg></div>
+    <div class="gtitle">우편 운송모바일</div>
+    <div class="gsub" id="gSub">우편 운송 모바일 앱입니다.<br>로그인 후 이용가능합니다.</div>
+    <div id="gInfo" hidden>
+      <div class="gclock" id="gClock"></div>
+      <a class="gwx" href="https://www.weather.go.kr" target="_blank" rel="noopener">오늘 날씨 보기 (기상청) ›</a>
     </div>
-    <label for="kHint">비밀번호 힌트 (선택)</label><input id="kHint" autocomplete="off">
-    <div class="note">비밀번호를 등록하면 앱을 열 때마다 물어봅니다. 비워 두면 비밀번호 없이 사용합니다.</div>
-    <div class="warn" id="kMsg" hidden></div>
-    <button class="btn" id="kStart" disabled style="margin-top:12px">등록하고 시작하기</button>
+    <div id="gBody" hidden>
+      <div class="card" id="gtLoad"><div class="note" style="margin-top:0">불러오는 중입니다…</div></div>
+      <div class="card" id="gtNew" hidden>
+        <div class="note" style="margin-top:0">처음 한 번만 등록합니다. 이 정보는 이 폰에만 저장됩니다.</div>
+        <label for="kName">운행자 이름</label><input id="kName" autocomplete="name">
+        <label for="kOrg">소속 (선택)</label><input id="kOrg" autocomplete="organization">
+        <label for="kPlate">차량번호</label><input id="kPlate" autocomplete="off" placeholder="예: 12가3456">
+        <label for="kPhone">연락처 (선택)</label><input id="kPhone" type="tel" inputmode="tel" autocomplete="tel">
+        <div class="row">
+          <div><label for="kPw">비밀번호 (4자 이상)</label><input id="kPw" type="password" autocomplete="new-password"></div>
+          <div><label for="kPw2">비밀번호 확인</label><input id="kPw2" type="password" autocomplete="new-password"></div>
+        </div>
+        <label for="kHint">비밀번호 힌트 (선택)</label><input id="kHint" autocomplete="off">
+        <div class="note">비밀번호를 등록하면 앱을 열 때마다 물어봅니다. 비워 두면 비밀번호 없이 사용합니다.</div>
+        <div class="warn" id="kMsg" hidden></div>
+      </div>
+      <div id="gtLock" hidden>
+        <label for="kPass" class="vhide">비밀번호</label>
+        <input id="kPass" type="password" autocomplete="current-password" placeholder="비밀번호">
+        <div class="warn" id="kErr" hidden></div>
+        <button class="link" id="kHintBtn" hidden>비밀번호 힌트 보기</button>
+        <div class="note" id="kHintTxt" hidden></div>
+      </div>
+      <div class="gact">
+        <button class="gbtn" id="kEnter" hidden>로그인하기</button>
+        <button class="gbtn" id="kOpen" hidden>시작하기</button>
+        <button class="gbtn" id="kStart" hidden disabled>등록하고 시작하기</button>
+      </div>
+    </div>
   </div>
-  <div class="card" id="gtLock" hidden>
-    <div class="ct" id="gtHello"></div>
-    <label for="kPass" style="margin-top:0">비밀번호</label><input id="kPass" type="password" autocomplete="current-password">
-    <div class="warn" id="kErr" hidden></div>
-    <button class="btn" id="kEnter" style="margin-top:12px">들어가기</button>
-    <button class="link" id="kHintBtn" hidden style="padding-left:0">비밀번호 힌트 보기</button>
-    <div class="note" id="kHintTxt" hidden></div>
+  <div class="gbot">
+    <button class="gbtn" id="gGo">로그인하기</button>
+    <div class="gfoot">made by Aul_70<br>leetaekkyu70@gmail.com</div>
   </div>
-  <div class="card" id="gtOpen" hidden>
-    <div class="ct" id="gtHello2"></div>
-    <button class="btn" id="kOpen">시작하기</button>
-    <div class="note">비밀번호가 등록되어 있지 않습니다. 홈 화면의 "정보 수정"에서 등록할 수 있습니다.</div>
-  </div>
-  <div class="note" id="madeBy" style="text-align:center;margin-top:18px;line-height:1.6">made by Aul_70<br>leetaekkyu70@gmail.com</div>
 </section>
 
 <section id="home" hidden>
@@ -1815,7 +1848,7 @@ function renderHome(){
 }
 function tick(){
   const n=new Date(), ds=n.getFullYear()+"년 "+(n.getMonth()+1)+"월 "+n.getDate()+"일 "+DOW[n.getDay()]+"요일";
-  $("gtTime").textContent=pad(n.getHours())+":"+pad(n.getMinutes());$("gtDate").textContent=ds;$("hmDate").textContent=ds;
+  $("gClock").textContent=ds+" "+pad(n.getHours())+":"+pad(n.getMinutes());$("hmDate").textContent=ds;
 }
 setInterval(tick,15000);
 /* ---------- 첫 화면과 비밀번호 ---------- */
@@ -1827,17 +1860,20 @@ async function pwHash(pw,salt){
 }
 const newSalt=()=>uid6()+uid6();
 const maskName=n=>n.length<=1?n:n.length===2?n[0]+"*":n[0]+"*".repeat(n.length-2)+n[n.length-1];
+let gateStep=0;
 function renderGate(){
   tick();
   if(unlocked)return;
-  const st=!storeReady?"load":!profile?"new":profile.pwHash?"lock":"open";
-  $("gtLoad").hidden=st!=="load";$("gtNew").hidden=st!=="new";$("gtLock").hidden=st!=="lock";$("gtOpen").hidden=st!=="open";
-  $("gtHello").textContent=st==="lock"?maskName(profile.name)+" 님, 비밀번호를 입력하세요":"";
-  $("gtHello2").textContent=st==="open"?profile.name+" 님, 안녕하세요":"";
+  const st=!storeReady?"load":!profile?"new":profile.pwHash?"lock":"open", intro=gateStep===0;
+  $("gBody").hidden=intro;$("gGo").hidden=!intro;$("gInfo").hidden=intro;
+  $("gtLoad").hidden=intro||st!=="load";$("gtNew").hidden=intro||st!=="new";$("gtLock").hidden=intro||st!=="lock";
+  $("kStart").hidden=intro||st!=="new";$("kEnter").hidden=intro||st!=="lock";$("kOpen").hidden=intro||st!=="open";
+  if(intro)$("gSub").innerHTML="우편 운송 모바일 앱입니다.<br>로그인 후 이용가능합니다.";
+  else $("gSub").textContent=st==="load"?"불러오는 중입니다…":st==="new"?"처음 한 번만 등록합니다.":st==="lock"?"비밀번호를 입력하세요.":maskName(profile.name)+" 님, 안녕하세요";
   if(profile)$("kHintBtn").hidden=!profile.hint;
 }
 function enterApp(){unlocked=true;autoPreset();document.body.classList.remove("locked");$("kPass").value="";$("kErr").hidden=true;$("kHintTxt").hidden=true;showTab("home")}
-function lockApp(){unlocked=false;regEdit=false;document.body.classList.add("locked");renderGate();window.scrollTo(0,0)}
+function lockApp(){unlocked=false;gateStep=0;regEdit=false;document.body.classList.add("locked");renderGate();window.scrollTo(0,0)}
 function pwCheck(a,b){return !a&&!b?"":a.length<4?"비밀번호는 4자 이상이어야 합니다.":a!==b?"비밀번호와 확인이 서로 다릅니다.":""}
 const kOk=()=>{$("kStart").disabled=!($("kName").value.trim()&&$("kPlate").value.trim())};
 for(const id of ["kName","kPlate"])$(id).addEventListener("input",kOk);
@@ -1857,6 +1893,7 @@ async function tryEnter(){
   failN++;$("kErr").hidden=false;$("kErr").textContent="비밀번호가 맞지 않습니다."+(failN>=3&&profile.hint?" 힌트를 확인해 보세요.":"");$("kPass").value="";
 }
 $("kEnter").onclick=tryEnter;
+$("gGo").onclick=()=>{gateStep=1;renderGate();const p=$("kPass");if(!$("gtLock").hidden)setTimeout(()=>p.focus(),60)};
 $("kPass").addEventListener("keydown",e=>{if(e.key==="Enter")tryEnter()});
 $("kHintBtn").onclick=()=>{$("kHintTxt").hidden=false;$("kHintTxt").textContent="힌트: "+profile.hint};
 $("kOpen").onclick=enterApp;
@@ -1906,8 +1943,8 @@ if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useL
 (function(){
   if(!window.Native)return;
   document.body.classList.add("app");
-  const APP_VER="1.4";
-  {const v=document.createElement("div");v.id="appVer";v.className="note";v.style.cssText="text-align:center;margin-top:4px";v.textContent="앱 버전 "+APP_VER;$("gate").append(v)}
+  const APP_VER="1.8";
+  {const v=document.createElement("div");v.id="appVer";document.querySelector("#gate .gfoot").append(v);v.textContent="앱 버전 "+APP_VER}
   /* 1) 저장할 때마다 앱 내부 파일에도 복사해 둔다 */
   const _ls=lsSave;
   lsSave=function(){_ls();try{Native.persist(localStorage.getItem(LS)||"")}catch(e){}};
@@ -1968,8 +2005,8 @@ if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useL
   showBk();
   /* 4) 날씨 */
   const WMO=c=>c===0?"맑음":c<=2?"대체로 맑음":c===3?"흐림":c<=48?"안개":c<=57?"이슬비":c<=67?"비":c<=77?"눈":c<=82?"소나기":c<=86?"눈 소나기":"뇌우";
-  const old=document.querySelector("#gate .wx"), wx=document.createElement("button");
-  wx.className="wx";wx.id="wxBox";wx.style.cssText="width:100%;border:0;font:inherit;font-weight:700;line-height:1.5";wx.textContent="날씨를 불러오는 중…";old.replaceWith(wx);
+  const old=document.querySelector("#gate .gwx"), wx=document.createElement("button");
+  wx.className="gwx";wx.id="wxBox";wx.textContent="날씨를 불러오는 중…";old.replaceWith(wx);
   let wxAt=0;
   async function loadWeather(force){
     if(!force&&Date.now()-wxAt<25*60000)return;
@@ -1992,9 +2029,12 @@ if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useL
   let canAuth=false;try{canAuth=!!Native.canAuth()}catch(e){}
   window.__authDone=ok=>{if(ok&&profile&&profile.pwHash&&!unlocked){failN=0;enterApp()}};
   if(canAuth){
-    const b=document.createElement("button");b.className="btn ghost";b.id="kBio";b.textContent="지문·화면 잠금으로 열기";b.style.marginTop="8px";
+    const b=document.createElement("button");b.className="gbtn";b.id="kBio";b.textContent="지문·화면 잠금으로 열기";
+    b.style.cssText="margin-top:8px;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.55)";
     $("kEnter").after(b);b.onclick=()=>Native.auth();
-    setTimeout(()=>{if(profile&&profile.pwHash&&!unlocked)Native.auth()},700);
+    const _rg=renderGate;renderGate=function(){_rg();b.hidden=$("kEnter").hidden&&$("kOpen").hidden};renderGate();
+    const go=$("gGo"), prev=go.onclick;
+    go.onclick=()=>{prev&&prev();if(profile&&profile.pwHash&&!unlocked)setTimeout(()=>Native.auth(),300)};
   }
   /* 6) 들어갈 때 자동 백업과 날씨 갱신 */
   const _enter=enterApp;
