@@ -1934,7 +1934,7 @@ if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useL
 (function(){
   if(!window.Native)return;
   document.body.classList.add("app");
-  const APP_VER="2.1";
+  const APP_VER="2.2";
   {const v=document.createElement("div");v.id="appVer";document.querySelector("#gate .gfoot").append(v);v.textContent="앱 버전 "+APP_VER}
   /* 1) 저장할 때마다 앱 내부 파일에도 복사해 둔다 */
   const _ls=lsSave;

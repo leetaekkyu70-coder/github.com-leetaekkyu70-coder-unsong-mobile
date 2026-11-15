@@ -305,6 +305,8 @@ public class MainActivity extends Activity {
             js("__ocrDone(" + JSONObject.quote(id) + ",{error:" + JSONObject.quote(message) + "})");
         }
 
+        /** 폰에 지문·PIN·패턴 같은 화면 잠금이 걸려 있는지. */
+        @JavascriptInterface
         public boolean canAuth() {
             KeyguardManager km = getSystemService(KeyguardManager.class);
             return km != null && km.isDeviceSecure();
