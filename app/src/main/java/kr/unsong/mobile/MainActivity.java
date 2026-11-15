@@ -317,7 +317,7 @@ public class MainActivity extends Activity {
             runOnUiThread(() -> {
                 try {
                     BiometricPrompt.Builder b = new BiometricPrompt.Builder(MainActivity.this)
-                            .setTitle("운송 모바일")
+                            .setTitle("우편 운송모바일")
                             .setSubtitle("지문이나 화면 잠금으로 엽니다");
                     if (Build.VERSION.SDK_INT >= 30) {
                         b.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK

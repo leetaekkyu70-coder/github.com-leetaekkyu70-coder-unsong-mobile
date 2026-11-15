@@ -1934,7 +1934,7 @@ if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useL
 (function(){
   if(!window.Native)return;
   document.body.classList.add("app");
-  const APP_VER="1.9";
+  const APP_VER="2.0";
   {const v=document.createElement("div");v.id="appVer";document.querySelector("#gate .gfoot").append(v);v.textContent="앱 버전 "+APP_VER}
   /* 1) 저장할 때마다 앱 내부 파일에도 복사해 둔다 */
   const _ls=lsSave;
@@ -1995,16 +1995,20 @@ if(window.claude&&claude.use){initStore();initDownloads();initImport()}else useL
   }
   showBk();
   /* 4) 지문·화면 잠금으로 열기 */
-  let canAuth=false;try{canAuth=!!Native.canAuth()}catch(e){}
-  window.__authDone=ok=>{if(ok&&profile&&profile.pwHash&&!unlocked){failN=0;enterApp()}};
-  if(canAuth){
-    const b=document.createElement("button");b.className="gbtn";b.id="kBio";b.textContent="지문·화면 잠금으로 열기";
-    b.style.cssText="margin-top:8px;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.55)";
-    $("kEnter").after(b);b.onclick=()=>Native.auth();
-    const _rg=renderGate;renderGate=function(){_rg();b.hidden=$("kEnter").hidden&&$("kOpen").hidden};renderGate();
-    const go=$("gGo"), prev=go.onclick;
-    go.onclick=()=>{prev&&prev();if(profile&&profile.pwHash&&!unlocked)setTimeout(()=>Native.auth(),300)};
-  }
+  const canAuth=()=>{try{return !!Native.canAuth()}catch(e){return false}};
+  const bio=document.createElement("button");bio.className="gbtn";bio.id="kBio";bio.textContent="지문·화면 잠금으로 열기";
+  bio.style.cssText="margin-top:8px;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.55)";
+  const bioMsg=document.createElement("div");bioMsg.className="note";bioMsg.id="kBioMsg";bioMsg.hidden=true;bioMsg.style.textAlign="center";
+  $("kEnter").after(bio);bio.after(bioMsg);
+  window.__authDone=ok=>{if(ok&&!unlocked){failN=0;enterApp()}};
+  bio.onclick=()=>{
+    if(canAuth()){bioMsg.hidden=true;Native.auth();return}
+    bioMsg.hidden=false;bioMsg.textContent="폰에 화면 잠금(지문·PIN·패턴)이 설정되어 있어야 쓸 수 있습니다. 폰 설정에서 화면 잠금을 켠 뒤 다시 눌러 주세요.";
+  };
+  /* 첫 화면에는 숨기고, 로그인 화면에서만 보여준다 */
+  const _rg=renderGate;renderGate=function(){_rg();bio.hidden=$("kEnter").hidden&&$("kOpen").hidden;if(bio.hidden)bioMsg.hidden=true};renderGate();
+  const go=$("gGo"), prevGo=go.onclick;
+  go.onclick=()=>{prevGo&&prevGo();if(profile&&profile.pwHash&&!unlocked&&canAuth())setTimeout(()=>Native.auth(),300)};
   /* 5) 들어갈 때 자동 백업 */
   const _enter=enterApp;
   enterApp=function(){_enter();setTimeout(autoBackup,1500)};
