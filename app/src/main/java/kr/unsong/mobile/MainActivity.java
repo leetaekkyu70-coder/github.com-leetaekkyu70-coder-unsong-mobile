@@ -310,32 +310,56 @@ public class MainActivity extends Activity {
             return km != null && km.isDeviceSecure();
         }
 
-        /** 지문이나 화면 잠금으로 확인하고, 성공하면 화면의 __authDone(true)를 부른다. */
+        /** 지문이나 화면 잠금으로 확인하고, 성공하면 화면의 __authDone(true)를 부른다.
+         *  창을 띄우지 못하면 그 이유를 화면의 __authFail(이유)로 알려 준다. */
         @JavascriptInterface
         @SuppressWarnings("deprecation")
         public void auth() {
             runOnUiThread(() -> {
                 try {
-                    BiometricPrompt.Builder b = new BiometricPrompt.Builder(MainActivity.this)
-                            .setTitle("우편 운송모바일")
-                            .setSubtitle("지문이나 화면 잠금으로 엽니다");
-                    if (Build.VERSION.SDK_INT >= 30) {
-                        b.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK
-                                | BiometricManager.Authenticators.DEVICE_CREDENTIAL);
-                    } else {
-                        b.setDeviceCredentialAllowed(true);
+                    prompt(false);
+                } catch (Throwable t) {
+                    // 기기에 따라 "화면 잠금 함께 쓰기"를 거부한다. 지문만으로 다시 시도한다.
+                    try {
+                        prompt(true);
+                    } catch (Throwable t2) {
+                        authFail(String.valueOf(t2.getMessage() == null ? t2 : t2.getMessage()));
                     }
-                    b.build().authenticate(new CancellationSignal(), getMainExecutor(),
-                            new BiometricPrompt.AuthenticationCallback() {
-                                @Override
-                                public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
-                                    js("window.__authDone&&__authDone(true)");
-                                }
-                            });
-                } catch (Exception e) {
-                    // 확인 창을 띄울 수 없으면 비밀번호로 들어간다.
                 }
             });
+        }
+
+        /** biometricOnly가 true면 화면 잠금 없이 지문만 쓴다(취소 버튼 필요). */
+        @SuppressWarnings("deprecation")
+        private void prompt(boolean biometricOnly) {
+            BiometricPrompt.Builder b = new BiometricPrompt.Builder(MainActivity.this)
+                    .setTitle("우편 운송모바일")
+                    .setSubtitle("지문이나 화면 잠금으로 엽니다");
+            if (biometricOnly) {
+                b.setNegativeButton("취소", getMainExecutor(), (d, w) -> { });
+            } else if (Build.VERSION.SDK_INT >= 30) {
+                b.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK
+                        | BiometricManager.Authenticators.DEVICE_CREDENTIAL);
+            } else {
+                b.setDeviceCredentialAllowed(true);
+            }
+            b.build().authenticate(new CancellationSignal(), getMainExecutor(),
+                    new BiometricPrompt.AuthenticationCallback() {
+                        @Override
+                        public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
+                            js("window.__authDone&&__authDone(true)");
+                        }
+
+                        @Override
+                        public void onAuthenticationError(int code, CharSequence err) {
+                            // 5 취소됨, 10 사용자가 닫음, 13 취소 버튼 — 알릴 필요 없다.
+                            if (code != 5 && code != 10 && code != 13) authFail(code + ": " + err);
+                        }
+                    });
+        }
+
+        private void authFail(String message) {
+            js("window.__authFail&&__authFail(" + JSONObject.quote(message) + ")");
         }
 
         /** 알림 목록([{id,date,title,text}])을 저장하고 매일 아침 확인을 예약한다. */
